@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Option A — AI Diagnostic Refresher</title>
+  <link rel="stylesheet" href="shared.css">
+</head>
+<body data-option="a">
+  <header class="topbar">
+    <a class="brand" href="index.html">VLearn Lab · Day 18</a>
+    <span class="topbar-note">Option A</span>
+  </header>
+  <main class="container prototype-shell">
+    <a class="back-link" href="index.html">← Về common context</a>
+    <section class="prototype-title">
+      <p class="eyebrow">OPTION A · AI DIAGNOSTIC REFRESHER</p>
+      <h1>AI chẩn đoán nhanh phần bạn chưa hiểu</h1>
+      <p class="lead">AI chỉ hoạt động sau khi bạn chủ động yêu cầu. Bạn luôn có thể bỏ qua, dừng hoặc quay lại bài.</p>
+    </section>
+
+    <section id="a-context" class="panel">
+      <div class="slide-number">Human–AI Design · Slide 12 / 24</div>
+      <div class="slide-content">
+        <h2>G-T-B-D-Hypothesis</h2>
+        <p>Giảng viên vừa chuyển sang phần tiếp theo. Bạn chưa chắc khái niệm này có nghĩa gì.</p>
+        <p class="notice">Bạn có khoảng một phút trước khi nội dung tiếp tục.</p>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" data-action="a-start">Tôi vẫn chưa hiểu</button>
+        <button class="btn btn-quiet" data-action="a-save">Đánh dấu để xem sau</button>
+      </div>
+    </section>
+
+    <section id="a-diagnostic" class="panel hidden">
+      <div class="option-banner">AI sẽ hỏi tối đa 2 câu ngắn dựa trên slide hiện tại.</div>
+      <h2>Điều gì đang làm bạn vướng?</h2>
+      <div class="choice-list">
+        <div class="choice"><input type="radio" name="a-q1" checked><label>Tôi chưa hiểu thuật ngữ chính.</label></div>
+        <div class="choice"><input type="radio" name="a-q1"><label>Tôi chưa hiểu mối liên hệ với phần trước.</label></div>
+        <div class="choice"><input type="radio" name="a-q1"><label>Tôi muốn xem một ví dụ cụ thể.</label></div>
+      </div>
+      <p class="slide-number">AI đang dùng: slide hiện tại và lựa chọn của bạn. Không dùng lịch sử học tập trong prototype này.</p>
+      <div class="actions">
+        <button class="btn btn-primary" data-action="a-diagnose">Xem gợi ý ôn tập</button>
+        <button class="btn btn-quiet" data-action="a-return">Dừng và quay lại bài</button>
+      </div>
+    </section>
+
+    <section id="a-result" class="panel result hidden">
+      <h2>Có thể bạn cần xem lại: Hypothesis</h2>
+      <p>Trong context này, hypothesis là một cách diễn đạt điều bạn dự đoán sẽ đúng và điều bạn sẽ kiểm tra bằng evidence. Hãy xem đây là gợi ý, không phải kết luận chắc chắn.</p>
+      <div class="evidence">
+        <strong>Evidence được dùng</strong>
+        Slide 12 và lựa chọn “chưa hiểu thuật ngữ chính” của bạn.
+      </div>
+      <div class="actions">
+        <button class="btn btn-success" data-action="a-return">Quay lại bài</button>
+        <button class="btn" data-action="a-save">Đánh dấu để xem sau</button>
+        <button class="btn btn-quiet" data-action="a-retry">Chọn lại</button>
+      </div>
+    </section>
+    <div id="toast" class="toast hidden" role="status"></div>
+  </main>
+  <script src="prototype.js"></script>
+</body>
+</html>
