@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Option B — Smart Tooltip</title>
+  <link rel="stylesheet" href="shared.css">
+</head>
+<body data-option="b">
+  <header class="topbar">
+    <a class="brand" href="index.html">VLearn Lab · Day 18</a>
+    <span class="topbar-note">Option B</span>
+  </header>
+  <main class="container prototype-shell">
+    <a class="back-link" href="index.html">← Về common context</a>
+    <section class="prototype-title">
+      <p class="eyebrow" style="color: var(--green)">OPTION B · SMART TOOLTIP</p>
+      <h1>Chọn đúng thuật ngữ, xem giải thích trong vài giây</h1>
+      <p class="lead">User chủ động chọn nội dung cần xem. Hệ thống không tự chẩn đoán lỗ hổng kiến thức.</p>
+    </section>
+
+    <section class="panel">
+      <div class="slide-number">Human–AI Design · Slide 12 / 24</div>
+      <div class="slide-content">
+        <h2>G-T-B-D-Hypothesis <button class="term-chip" data-action="b-open" aria-label="Mở giải thích">[?]</button></h2>
+        <p>Giảng viên vừa chuyển sang phần tiếp theo. Hãy click vào [?] nếu muốn xem định nghĩa và ví dụ ngắn.</p>
+        <div id="b-tooltip" class="tooltip hidden">
+          <strong>Giải thích ngắn</strong>
+          <p>Hypothesis là một dự đoán có thể kiểm tra bằng evidence. Trong bài này, bạn cần phân biệt điều quan sát được với điều nhóm đang diễn giải.</p>
+          <p class="slide-number">Nguồn: Slide 12 · Nội dung đã được chuẩn bị trước cho bài học.</p>
+          <div class="actions">
+            <button class="btn btn-success" data-action="b-close">Đóng và tiếp tục</button>
+            <button class="btn" data-action="b-save">Lưu để xem sau</button>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-quiet" data-action="b-save">Đánh dấu thuật ngữ</button>
+      </div>
+    </section>
+    <div id="toast" class="toast hidden" role="status"></div>
+  </main>
+  <script src="prototype.js"></script>
+</body>
+</html>
