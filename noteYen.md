@@ -1,0 +1,3 @@
+- với option Việt: sẽ phù hợp với việc học viên tập trước hoặc sau khi bài giảng, và học viên phải thao tác nhiều có thể bỏ lỡ việc nghe giảng trên lớp
+- với option Yến: sẽ phù hợp với việc nghe giảng hơn, nhưng hơi nặng việc cho giảng viên. Và luồng hoạt động ban đầu phải giải thích cho người dùng mới hiểu được nhưng hơi thụ động khi học viên không hiểu được với những giải thích và ví dụ hiện có.
+- với option Huy: học viên thụ động và gây áp lực nên cho giảng viên nếu 1 khái niệm nhưng gửi trong nhiều thời gian khác nhau + thời gian chờ đợi lâu
