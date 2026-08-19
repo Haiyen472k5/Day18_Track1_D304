@@ -2,84 +2,116 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Option A — AI Diagnostic Refresher</title>
-  <link rel="stylesheet" href="yen-style.css">
+  <style>
+    :root{--ink:#0f172a;--text:#334155;--muted:#64748b;--line:#dbe3ef;--blue:#2563eb;--cyan:#0891b2;--green:#059669;--amber:#b45309;--paper:#eef3f9;--white:#fff}
+    *{box-sizing:border-box} body{margin:0;min-height:100vh;padding:22px;font-family:"Segoe UI",system-ui,sans-serif;color:var(--ink);background:radial-gradient(circle at 10% 5%,#d9f5fb 0,transparent 28rem),radial-gradient(circle at 90% 10%,#dfe7ff 0,transparent 32rem),var(--paper);display:grid;place-items:center}
+    button,input{font:inherit} button{cursor:pointer}.hidden{display:none!important}
+    .slide{width:min(960px,100%);min-height:560px;padding:34px 40px 30px;border:1px solid rgba(203,213,225,.8);border-radius:26px;background:rgba(255,255,255,.94);box-shadow:0 24px 70px rgba(15,23,42,.13);display:flex;flex-direction:column;justify-content:space-between}
+    .slide-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:18px;border-bottom:2px solid #f1f5f9}.slide-title{font-size:22px;font-weight:800}.header-actions{display:flex;align-items:center;gap:10px}.badge{padding:6px 13px;border-radius:999px;color:#475569;background:#f1f5f9;font-size:13px;font-weight:700}
+    .help-btn{border:0;border-radius:12px;padding:11px 16px;color:#fff;background:linear-gradient(135deg,var(--blue),var(--cyan));font-weight:800;box-shadow:0 9px 22px rgba(37,99,235,.23);transition:.18s}.help-btn:hover{transform:translateY(-2px);box-shadow:0 13px 28px rgba(37,99,235,.3)}
+    .slide-body{padding:28px 4px 10px;color:var(--text);font-size:17px;line-height:1.9}.slide-body p{margin:0 0 20px}.concept{padding:3px 7px;border:1px solid #bae6fd;border-radius:7px;color:#0369a1;background:#e0f2fe;font-weight:700}.slide-footer{display:flex;justify-content:space-between;gap:16px;padding-top:17px;border-top:1px solid #eef2f7;color:#8491a5;font-size:13px}.progress{font-weight:700;color:#506078}
+    .backdrop{position:fixed;inset:0;z-index:1000;padding:18px;background:rgba(15,23,42,.56);backdrop-filter:blur(7px);display:grid;place-items:center;opacity:0;visibility:hidden;transition:.2s}.backdrop.active{opacity:1;visibility:visible}.modal{width:min(720px,100%);max-height:92vh;overflow:auto;padding:28px 30px;border-radius:24px;background:#fff;box-shadow:0 30px 80px rgba(0,0,0,.28);transform:translateY(10px) scale(.98);transition:.22s}.backdrop.active .modal{transform:none}
+    .modal-top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:20px}.kicker{display:inline-flex;padding:6px 10px;border-radius:999px;color:#1d4ed8;background:#eaf0ff;font-size:12px;font-weight:900;letter-spacing:.08em}.modal h2{margin:9px 0 5px;font-size:clamp(22px,4vw,30px);line-height:1.2}.sub{margin:0;color:var(--muted)}.close{width:38px;height:38px;border:0;border-radius:50%;color:#64748b;background:#f1f5f9;font-size:18px}.close:hover{background:#e2e8f0;color:#0f172a}
+    .capabilities{display:grid;gap:9px;padding:0;list-style:none}.capabilities li{padding:12px 14px;border:1px solid var(--line);border-radius:12px;color:#3d4b62;background:#f8fafc}.capabilities li::before{content:"✓";margin-right:9px;color:var(--green);font-weight:900}.limit{padding:13px 15px;border-left:4px solid #f59e0b;border-radius:9px;color:#78350f;background:#fffbeb}
+    .step-row{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;font-weight:700}.track{height:8px;margin:9px 0 22px;border-radius:999px;background:#e7edf5;overflow:hidden}.fill{height:100%;width:33.333%;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:.2s}
+    fieldset{border:0;padding:0;margin:0}legend{padding:0;width:100%}.choices{display:grid;gap:10px;margin:17px 0}.choice{display:flex;gap:10px;padding:14px;border:1px solid var(--line);border-radius:13px;background:#fff;transition:.15s}.choice:hover{border-color:#9bb2f3;transform:translateY(-1px)}.choice:has(input:checked){border-color:var(--blue);background:#eff4ff;box-shadow:0 0 0 3px rgba(37,99,235,.1)}.choice input{margin-top:3px;accent-color:var(--blue)}.choice label{flex:1;cursor:pointer}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{min-height:43px;padding:10px 16px;border:1px solid #cbd5e1;border-radius:11px;color:var(--ink);background:#fff;font-weight:750}.btn:hover{border-color:#91a4bf;box-shadow:0 7px 17px rgba(15,23,42,.09)}.primary{border-color:transparent;color:#fff;background:linear-gradient(135deg,var(--blue),#4778ef)}.success{border-color:transparent;color:#fff;background:linear-gradient(135deg,#059669,#10b981)}.quiet{color:#64748b}.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+    .evidence,.lesson,.recovery{margin:14px 0;padding:16px;border:1px solid var(--line);border-radius:14px;background:#f8fafc}.evidence strong,.lesson strong{display:block;margin-bottom:6px}.uncertain{padding:13px 15px;border-radius:11px;color:#78350f;background:#fffbeb}.lesson{background:#f0fdf8;border-color:#bbf7d0}.example{margin-top:12px;padding:13px;border-left:4px solid var(--cyan);border-radius:9px;background:#ecfeff}.feedback{margin-top:12px;padding:12px;border-radius:10px}.correct{color:#065f46;background:#d1fae5}.incorrect{color:#92400e;background:#fef3c7}.error{margin-top:10px;color:#b91c1c;font-weight:700}
+    .toast{position:fixed;left:50%;bottom:26px;z-index:2000;transform:translate(-50%,20px);opacity:0;padding:12px 20px;border-radius:999px;color:#fff;background:#0f172a;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+    button:focus-visible,input:focus-visible{outline:3px solid rgba(37,99,235,.35);outline-offset:3px}
+    @media(max-width:650px){body{padding:10px}.slide{padding:22px 18px;border-radius:19px}.slide-header{align-items:flex-start}.header-actions{flex-direction:column;align-items:flex-end}.help-btn{font-size:13px}.slide-footer{flex-direction:column}.modal{padding:22px 19px}.actions .btn{width:100%}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+  </style>
 </head>
-<body data-option="a">
-  <div class="slide-container">
+<body>
+  <main class="slide" id="slideApp">
     <header class="slide-header">
-      <div class="slide-header-left">
-        <h2>📚 Chương 3: Trí tuệ nhân tạo trong giáo dục</h2>
-      </div>
-      <div class="slide-header-right">
-        <span class="badge">Buổi 4 · 45 phút</span>
-        <button class="btn-help-trigger" data-action="a-start" title="Yêu cầu AI hỗ trợ">?</button>
-      </div>
+      <div class="slide-title">📚 Chương 3: Trí tuệ nhân tạo trong giáo dục</div>
+      <div class="header-actions"><span class="badge">Buổi 4 · 45 phút</span><button class="help-btn" id="startHelp" type="button">Tôi vẫn chưa hiểu</button></div>
     </header>
+    <article class="slide-body" aria-label="Nội dung bài giảng">
+      <p><span class="concept">Học máy (Machine Learning)</span> là một nhánh của Trí tuệ nhân tạo cho phép máy tính học từ dữ liệu mà không cần lập trình rõ ràng từng bước.</p>
+      <p><span class="concept">Mô hình ngôn ngữ lớn (LLM)</span> như GPT là một loại mô hình học sâu có khả năng sinh văn bản tự nhiên dựa trên ngữ cảnh đầu vào, được huấn luyện trên hàng tỷ tham số.</p>
+      <p><span class="concept">Học tăng cường (Reinforcement Learning)</span> là phương pháp học máy trong đó tác nhân học cách hành động trong một môi trường để tối đa hóa phần thưởng tích lũy.</p>
+    </article>
+    <footer class="slide-footer"><span>💡 Gặp nội dung chưa rõ? Hãy chủ động yêu cầu hỗ trợ.</span><span class="progress">Slide 12 / 24</span></footer>
+  </main>
 
-    <main class="slide-body">
-      <p>Học máy (Machine Learning) là một nhánh của Trí tuệ nhân tạo cho phép máy tính học từ dữ liệu mà không cần lập trình rõ ràng từng bước.</p>
-      <p>Mô hình ngôn ngữ lớn (LLM) và Học tăng cường (Reinforcement Learning) là hai khái niệm liên quan. Bạn chưa chắc <span class="concept-keyword">Machine Learning</span> có nghĩa gì và muốn tiếp tục theo kịp bài.</p>
-      <div class="option-strip">
-        <strong>Option A · AI Diagnostic Refresher</strong>
-        <span>AI chỉ hỗ trợ sau khi bạn chủ động yêu cầu. Bạn luôn có thể bỏ qua hoặc quay lại slide.</span>
-      </div>
-      <div class="notice-card">
-        <strong>Task</strong><br>
-        Dùng phương án này để xử lý phần chưa hiểu và tiếp tục theo dõi bài học.
-      </div>
-    </main>
+  <div class="backdrop" id="diagnosticBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <section class="modal">
+      <div class="modal-top"><div><span class="kicker">OPTION A · AI DIAGNOSTIC REFRESHER</span><h2 id="modalTitle">Chẩn đoán nhanh phần chưa hiểu</h2><p class="sub" id="modalSubtitle">Bạn kiểm soát toàn bộ quá trình hỗ trợ.</p></div><button class="close" id="closeModal" type="button" aria-label="Đóng và quay lại bài">✕</button></div>
 
-    <footer class="slide-footer">
-      <span class="slide-tip">💡 AI sẽ hỏi ngắn, đưa gợi ý và hiển thị evidence đang sử dụng.</span>
-      <button class="pill-button" data-action="a-start">Tôi vẫn chưa hiểu</button>
-    </footer>
+      <div id="introStep">
+        <ul class="capabilities"><li>AI hỏi 3 câu ngắn dựa trên bài giảng hiện tại.</li><li>AI gợi ý khái niệm có thể cần ôn và cho biết evidence đã dùng.</li><li>Bạn có thể sửa câu trả lời, từ chối gợi ý hoặc nhờ giảng viên.</li></ul>
+        <p class="limit"><strong>Giới hạn:</strong> Kết quả chỉ là gợi ý, không phải kết luận chắc chắn. Prototype không dùng lịch sử học tập và không thay thế giảng viên.</p>
+        <div class="actions"><button class="btn primary" id="beginQuestions" type="button">Bắt đầu 3 câu hỏi</button><button class="btn quiet cancel" type="button">Không, quay lại bài</button></div>
+      </div>
+
+      <form id="questionStep" class="hidden">
+        <div class="step-row"><span id="questionCount">Câu 1 / 3</span><span>Khoảng 45 giây</span></div><div class="track"><div class="fill" id="progressFill"></div></div>
+        <fieldset><legend><h2 id="questionText">Bạn đang vướng ở khái niệm nào?</h2></legend><div class="choices" id="questionChoices"></div></fieldset>
+        <p class="error hidden" id="answerError" role="alert">Hãy chọn một câu trả lời để tiếp tục.</p>
+        <div class="actions"><button class="btn hidden" id="backQuestion" type="button">← Câu trước</button><button class="btn primary" id="nextQuestion" type="submit">Tiếp tục</button><button class="btn quiet cancel" type="button">Dừng và quay lại bài</button></div>
+      </form>
+
+      <div id="resultStep" class="hidden">
+        <p class="uncertain"><strong>Đây chưa phải kết luận chắc chắn.</strong> AI chỉ suy luận từ slide và ba lựa chọn của bạn.</p>
+        <h2 id="diagnosisTitle">Có thể bạn cần xem lại: Machine Learning</h2>
+        <div class="evidence"><strong>Evidence AI đã dùng</strong><span id="evidenceText"></span></div>
+        <p id="diagnosisReason">Các lựa chọn cho thấy bạn chưa rõ cách mô hình học từ dữ liệu và cần một ví dụ cụ thể.</p>
+        <div class="actions"><button class="btn success" id="confirmDiagnosis" type="button">Đúng phần tôi đang vướng</button><button class="btn" id="rejectDiagnosis" type="button">Không đúng phần tôi đang vướng</button><button class="btn quiet cancel" type="button">Quay lại bài</button></div>
+      </div>
+
+      <div id="lessonStep" class="hidden">
+        <span class="kicker">PHẦN ÔN TẬP · KHOẢNG 1 PHÚT</span><h2 id="lessonTitle">Machine Learning học từ dữ liệu như thế nào?</h2>
+        <div class="lesson"><strong id="lessonDefinition">Giải thích ngắn</strong><p id="lessonBody">Machine Learning tìm quy luật trong nhiều ví dụ dữ liệu, sau đó dùng quy luật đã học để dự đoán cho dữ liệu mới.</p><div class="example" id="lessonExample">Ví dụ: hệ thống xem lịch sử mua hàng để dự đoán sản phẩm người dùng có thể quan tâm.</div></div>
+        <fieldset><legend><strong id="checkQuestion">Câu nào mô tả đúng Machine Learning?</strong></legend><div class="choices" id="checkChoices"><div class="choice"><input id="check1" type="radio" name="quickCheck" value="wrong"><label id="wrongLabel" for="check1">Máy tính chỉ làm đúng từng bước được lập trình sẵn.</label></div><div class="choice"><input id="check2" type="radio" name="quickCheck" value="correct"><label id="correctLabel" for="check2">Máy tính tìm quy luật từ dữ liệu để dự đoán trường hợp mới.</label></div></div></fieldset>
+        <button class="btn primary" id="checkAnswer" type="button">Kiểm tra câu trả lời</button><div class="feedback hidden" id="checkFeedback" role="status"></div>
+        <div class="actions"><button class="btn success" id="finishLesson" type="button" disabled>Đã hiểu — quay lại bài</button><button class="btn" id="alternativeExplanation" type="button">Xem cách giải thích khác</button><button class="btn quiet" id="askHumanFromLesson" type="button">Tôi vẫn cần người hỗ trợ</button></div>
+      </div>
+
+      <div id="recoveryStep" class="hidden"><h2>Gợi ý chưa đúng — bạn muốn làm gì?</h2><p>AI có thể sai. Câu trả lời vẫn được giữ trong phiên này và bạn quyết định bước tiếp theo.</p><div class="recovery actions"><button class="btn primary" id="retryQuestions" type="button">Trả lời lại</button><button class="btn" id="showAlternative" type="button">Xem giải thích khác</button><button class="btn" id="askHuman" type="button">Nhờ giảng viên/trợ giảng</button><button class="btn quiet cancel" type="button">Bỏ qua và quay lại bài</button></div></div>
+
+      <div id="humanStep" class="hidden"><h2>Chuyển yêu cầu cho người hỗ trợ</h2><p>Hệ thống sẽ gửi nội dung Slide 12, ba lựa chọn và phần bạn chưa hiểu. Không có dữ liệu nào được gửi trước khi bạn xác nhận.</p><div class="actions"><button class="btn primary" id="sendRequest" type="button">Xác nhận gửi yêu cầu</button><button class="btn" id="backRecovery" type="button">Quay lại</button><button class="btn quiet cancel" type="button">Không gửi, quay lại bài</button></div></div>
+    </section>
   </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <div class="modal-backdrop" id="aDiagnosticModal">
-    <div class="modal-card">
-      <button class="modal-close-btn" data-action="a-close" title="Đóng">✕</button>
-      <div class="modal-header-title">💡 AI Diagnostic Refresher</div>
-      <div class="modal-header-sub"><span class="badge-approved">✓ User chủ động yêu cầu</span> · AI hỏi tối đa 2 câu ngắn</div>
-      <div class="detail-section">
-        <div class="section-label">Bạn đang vướng ở đâu?</div>
-        <div class="choice-list">
-          <div class="choice"><input type="radio" name="a-diagnosis" checked><label>Chưa hiểu thuật ngữ chính.</label></div>
-          <div class="choice"><input type="radio" name="a-diagnosis"><label>Chưa hiểu mối liên hệ với phần trước.</label></div>
-          <div class="choice"><input type="radio" name="a-diagnosis"><label>Muốn xem một ví dụ cụ thể.</label></div>
-        </div>
-      </div>
-      <div class="source-card">AI đang dùng: slide hiện tại và lựa chọn của bạn. Prototype không dùng learning history.</div>
-      <div class="modal-footer">
-        <button class="pill-button pill-secondary" data-action="a-close">Dừng và quay lại</button>
-        <button class="pill-button" data-action="a-diagnose">Xem gợi ý ôn tập</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="aResultModal">
-    <div class="modal-card">
-      <button class="modal-close-btn" data-action="a-return" title="Đóng">✕</button>
-      <div class="modal-header-title">🧠 Gợi ý ôn tập</div>
-      <div class="modal-header-sub"><span class="badge-approved">✓ Gợi ý, không phải kết luận chắc chắn</span></div>
-      <div class="detail-section">
-        <div class="section-label">Có thể bạn cần xem lại</div>
-        <div class="section-body">Machine Learning là cách để hệ thống học từ dữ liệu và cải thiện mà không cần được lập trình rõ ràng từng bước. Hãy xem đây là gợi ý ngắn dựa trên slide hiện tại.</div>
-      </div>
-      <div class="example-card">Ví dụ: một hệ thống gợi ý có thể học từ lịch sử tương tác để đưa ra đề xuất phù hợp hơn ở lần sau.</div>
-      <div class="detail-section">
-        <div class="section-label">Evidence được dùng</div>
-        <div class="source-card">Slide hiện tại và lựa chọn “chưa hiểu thuật ngữ chính” của bạn.</div>
-      </div>
-      <div class="modal-footer">
-        <button class="pill-button pill-secondary" data-action="a-save">Đánh dấu xem sau</button>
-        <button class="pill-button" data-action="a-return">Quay lại bài</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
-  <script src="prototype.js"></script>
+  <script>
+    (()=>{'use strict';
+      const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+      const backdrop=$('#diagnosticBackdrop'), steps=['#introStep','#questionStep','#resultStep','#lessonStep','#recoveryStep','#humanStep'];
+      const questions=[
+        {text:'Bạn đang vướng ở khái niệm nào?',options:['Học máy (Machine Learning)','Mô hình ngôn ngữ lớn (LLM)','Học tăng cường (RL)']},
+        {text:'Điểm nào khiến bạn khó hiểu nhất?',options:['Cách hệ thống học từ dữ liệu','Mối quan hệ giữa các khái niệm','Các thuật ngữ như tham số, tác nhân và phần thưởng']},
+        {text:'Cách hỗ trợ nào hữu ích nhất lúc này?',options:['Một giải thích ngắn','Một ví dụ thực tế','Một câu kiểm tra nhanh']}
+      ];
+      const lessons={
+        'Học máy (Machine Learning)':{title:'Có thể bạn cần xem lại: Machine Learning',lesson:'Machine Learning học từ dữ liệu như thế nào?',body:'Machine Learning tìm quy luật trong nhiều ví dụ dữ liệu, sau đó dùng quy luật đã học để dự đoán cho dữ liệu mới.',example:'Ví dụ: hệ thống xem lịch sử mua hàng để dự đoán sản phẩm người dùng có thể quan tâm.',question:'Câu nào mô tả đúng Machine Learning?',wrong:'Máy tính chỉ làm đúng từng bước được lập trình sẵn.',correct:'Máy tính tìm quy luật từ dữ liệu để dự đoán trường hợp mới.'},
+        'Mô hình ngôn ngữ lớn (LLM)':{title:'Có thể bạn cần xem lại: Mô hình ngôn ngữ lớn',lesson:'LLM tạo văn bản như thế nào?',body:'LLM học các mẫu ngôn ngữ từ lượng lớn văn bản và dự đoán đơn vị ngôn ngữ tiếp theo dựa trên ngữ cảnh đầu vào.',example:'Ví dụ: khi nhận một câu hỏi, mô hình dự đoán chuỗi từ phù hợp để hình thành câu trả lời.',question:'Câu nào mô tả đúng cách LLM hoạt động?',wrong:'LLM luôn tra cứu một câu trả lời cố định đã lưu sẵn.',correct:'LLM dự đoán chuỗi ngôn ngữ phù hợp dựa trên ngữ cảnh đầu vào.'},
+        'Học tăng cường (RL)':{title:'Có thể bạn cần xem lại: Học tăng cường',lesson:'Tác nhân học từ phần thưởng như thế nào?',body:'Trong RL, tác nhân thử hành động, nhận phần thưởng hoặc hình phạt và điều chỉnh chiến lược để tăng tổng phần thưởng.',example:'Ví dụ: một tác nhân chơi game thử nhiều nước đi và ưu tiên những hành động đem lại điểm cao.',question:'Câu nào mô tả đúng Học tăng cường?',wrong:'Tác nhân chỉ ghi nhớ một danh sách hành động cố định.',correct:'Tác nhân thử hành động và điều chỉnh chiến lược dựa trên phần thưởng.'}
+      };
+      let index=0,answers=[null,null,null],lastFocus=null,timer;
+      function showStep(id){steps.forEach(s=>$(s).classList.add('hidden'));$(id).classList.remove('hidden');$('#modalTitle').textContent=id==='#introStep'?'Chẩn đoán nhanh phần chưa hiểu':'AI Diagnostic Refresher';}
+      function open(){lastFocus=document.activeElement;backdrop.classList.add('active');showStep('#introStep');setTimeout(()=>$('#closeModal').focus(),50)}
+      function close(message='Đã quay lại bài giảng. Không có yêu cầu nào được gửi.'){backdrop.classList.remove('active');toast(message);lastFocus?.focus()}
+      function toast(message){clearTimeout(timer);$('#toast').textContent=message;$('#toast').classList.add('show');timer=setTimeout(()=>$('#toast').classList.remove('show'),2600)}
+      function renderQuestion(){const q=questions[index];$('#questionCount').textContent=`Câu ${index+1} / 3`;$('#progressFill').style.width=`${(index+1)*33.333}%`;$('#questionText').textContent=q.text;$('#questionChoices').innerHTML=q.options.map((o,i)=>`<div class="choice"><input id="q${index}-${i}" type="radio" name="answer" value="${o}" ${answers[index]===o?'checked':''}><label for="q${index}-${i}">${o}</label></div>`).join('');$('#backQuestion').classList.toggle('hidden',index===0);$('#nextQuestion').textContent=index===2?'Xem gợi ý chẩn đoán':'Tiếp tục';$('#answerError').classList.add('hidden')}
+      function reset(){index=0;answers=[null,null,null];$$('input[name="quickCheck"]').forEach(i=>i.checked=false);$('#checkFeedback').className='feedback hidden';$('#finishLesson').disabled=true}
+      function prepareResult(){const data=lessons[answers[0]]||lessons['Học máy (Machine Learning)'];$('#diagnosisTitle').textContent=data.title;$('#lessonTitle').textContent=data.lesson;$('#lessonBody').textContent=data.body;$('#lessonExample').textContent=data.example;$('#checkQuestion').textContent=data.question;$('#wrongLabel').textContent=data.wrong;$('#correctLabel').textContent=data.correct;$('#evidenceText').textContent=`Bạn đã chọn “${answers[0]}”, “${answers[1]}” và “${answers[2]}”.`;$('#diagnosisReason').textContent=`AI suy luận rằng “${answers[1]}” là barrier chính và bạn ưu tiên “${answers[2]}”.`}
+      $('#startHelp').addEventListener('click',open);$('#closeModal').addEventListener('click',()=>close());$$('.cancel').forEach(b=>b.addEventListener('click',()=>close()));
+      $('#beginQuestions').addEventListener('click',()=>{reset();renderQuestion();showStep('#questionStep')});
+      $('#questionStep').addEventListener('submit',e=>{e.preventDefault();const selected=$('input[name="answer"]:checked');if(!selected){$('#answerError').classList.remove('hidden');return}answers[index]=selected.value;if(index<2){index++;renderQuestion()}else{prepareResult();showStep('#resultStep')}});
+      $('#backQuestion').addEventListener('click',()=>{if(index>0){index--;renderQuestion()}});$('#confirmDiagnosis').addEventListener('click',()=>showStep('#lessonStep'));$('#rejectDiagnosis').addEventListener('click',()=>showStep('#recoveryStep'));$('#retryQuestions').addEventListener('click',()=>{index=0;renderQuestion();showStep('#questionStep')});
+      function alternative(){showStep('#lessonStep');$('#lessonBody').textContent='Hãy hình dung AI như một người luyện tập: Machine Learning học từ nhiều ví dụ; LLM luyện cách dùng ngôn ngữ; RL luyện hành động bằng điểm thưởng.';$('#lessonExample').textContent='Cùng là “học”, nhưng mỗi cơ chế dùng một tín hiệu khác nhau để cải thiện.';toast('Đã chuyển sang cách giải thích bằng so sánh.')}
+      $('#showAlternative').addEventListener('click',alternative);$('#alternativeExplanation').addEventListener('click',alternative);function human(){showStep('#humanStep')}$('#askHuman').addEventListener('click',human);$('#askHumanFromLesson').addEventListener('click',human);$('#backRecovery').addEventListener('click',()=>showStep('#recoveryStep'));
+      $('#sendRequest').addEventListener('click',()=>close('Đã gửi yêu cầu cho giảng viên/trợ giảng sau khi bạn xác nhận.'));
+      $('#checkAnswer').addEventListener('click',()=>{const selected=$('input[name="quickCheck"]:checked'),box=$('#checkFeedback');box.classList.remove('hidden','correct','incorrect');if(!selected){box.textContent='Hãy chọn một câu trả lời.';box.classList.add('incorrect');return}if(selected.value==='correct'){box.textContent='Đúng. Đây là mô tả phù hợp với cơ chế của khái niệm bạn vừa ôn.';box.classList.add('correct');$('#finishLesson').disabled=false}else{box.textContent='Chưa đúng. Hãy xem lại giải thích và ví dụ phía trên rồi thử lại.';box.classList.add('incorrect')}});
+      $('#finishLesson').addEventListener('click',()=>close('Đã hoàn thành phần ôn tập và quay lại Slide 12.'));
+      backdrop.addEventListener('click',e=>{if(e.target===backdrop)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&backdrop.classList.contains('active'))close()});
+    })();
+  </script>
 </body>
 </html>
