@@ -1,50 +1,1628 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Option B — Smart Tooltip</title>
-  <link rel="stylesheet" href="shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prototype - Hệ thống Chú thích Khái niệm (Học viên & Giảng viên)</title>
+  <style>
+    /* ===== RESET & GLOBAL ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      background: #edf2f7;
+      min-height: 100vh;
+      padding: 20px;
+      color: #1e293b;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ===== ROLE SWITCHER TOPBAR ===== */
+    .app-topbar {
+      max-width: 980px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 12px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .topbar-brand {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .role-switcher-group {
+      display: flex;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 12px;
+      gap: 4px;
+    }
+
+    .role-btn {
+      background: transparent;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .role-btn:hover {
+      color: #0f172a;
+    }
+
+    .role-btn.active {
+      background: #ffffff;
+      color: #0284c7;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .role-badge-count {
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 20px;
+      font-weight: 700;
+    }
+
+    /* ===== VIEW CONTAINERS ===== */
+    .view-section {
+      max-width: 980px;
+      width: 100%;
+      display: none;
+      animation: fadeInView 0.25s ease;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes fadeInView {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ============================================================ */
+    /* ===== GIAO DIỆN 1: HỌC VIÊN (STUDENT VIEW) ===== */
+    /* ============================================================ */
+    .slide-container {
+      width: 100%;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 36px 42px 32px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      position: relative;
+      min-height: 500px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid #e2e8f0;
+    }
+
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 18px;
+      margin-bottom: 24px;
+      gap: 16px;
+    }
+
+    .slide-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .slide-header h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .slide-header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-session {
+      background: #f1f5f9;
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 13px;
+      color: #475569;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .btn-help-trigger {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #eff6ff;
+      border: 2px solid #bfdbfe;
+      color: #1d4ed8;
+      font-size: 20px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.12);
+      position: relative;
+    }
+
+    .btn-help-trigger:hover {
+      background: #1d4ed8;
+      color: #ffffff;
+      border-color: #1d4ed8;
+      transform: scale(1.1);
+      box-shadow: 0 6px 18px rgba(29, 78, 216, 0.28);
+    }
+
+    .btn-help-trigger::after {
+      content: "Xem chú thích & giải thích khái niệm";
+      position: absolute;
+      bottom: -38px;
+      right: 0;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 8px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+      transform: translateY(-4px);
+      z-index: 20;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-help-trigger:hover::after {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .slide-body {
+      line-height: 2;
+      font-size: 17px;
+      color: #334155;
+      flex-grow: 1;
+    }
+
+    .slide-body p {
+      margin-bottom: 22px;
+    }
+
+    .slide-footer {
+      margin-top: 24px;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slide-footer-tip {
+      font-size: 13.5px;
+      color: #64748b;
+    }
+
+    /* ============================================================ */
+    /* ===== GIAO DIỆN 2: GIẢNG VIÊN (INSTRUCTOR DASHBOARD) ===== */
+    /* ============================================================ */
+    .instructor-card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 32px 36px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      border: 1px solid #e2e8f0;
+    }
+
+    .instructor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .instructor-header h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .instructor-header p {
+      font-size: 14px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .instructor-actions-top {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-inst-action {
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: none;
+    }
+
+    .btn-inst-primary {
+      background: #0284c7;
+      color: #ffffff;
+    }
+
+    .btn-inst-primary:hover {
+      background: #0369a1;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+    }
+
+    .btn-inst-success {
+      background: #10b981;
+      color: #ffffff;
+    }
+
+    .btn-inst-success:hover {
+      background: #059669;
+    }
+
+    .btn-inst-secondary {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+
+    .btn-inst-secondary:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    /* Banner cảnh báo Limit / Capability của AI */
+    .ai-capability-banner {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-left: 5px solid #0284c7;
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .ai-banner-icon {
+      font-size: 22px;
+    }
+
+    .ai-banner-content h4 {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #0369a1;
+      margin-bottom: 2px;
+    }
+
+    .ai-banner-content p {
+      font-size: 13.5px;
+      color: #334155;
+      line-height: 1.5;
+    }
+
+    /* Danh sách Card đề xuất từ AI */
+    .concept-review-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .review-card {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 20px 24px;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .review-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    .review-card.status-approved {
+      border-color: #86efac;
+      background: #f0fdf4;
+    }
+
+    .review-card.status-rejected {
+      border-color: #fecaca;
+      background: #fef2f2;
+      opacity: 0.7;
+    }
+
+    .review-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .review-card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .review-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge-pill {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .badge-confidence-high {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .badge-confidence-medium {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .badge-priority {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .badge-status {
+      font-weight: 700;
+    }
+
+    .badge-status-approved {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .badge-status-pending {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .badge-status-rejected {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .ai-reasoning-box {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #475569;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #edf2f7;
+    }
+
+    .ai-warning-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #92400e;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .review-content-preview {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 16px;
+      background: #f8fafc;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid #f1f5f9;
+    }
+
+    .preview-block h5 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #64748b;
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .preview-block p {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #1e293b;
+    }
+
+    .review-actions-bottom {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 12px;
+    }
+
+    /* ============================================================ */
+    /* ===== POPUP / MODAL CHUNG ===== */
+    /* ============================================================ */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      padding: 20px;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 20px;
+      max-width: 680px;
+      width: 100%;
+      padding: 26px 30px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+      position: relative;
+      transform: scale(0.94) translateY(12px);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-backdrop.active .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: #f1f5f9;
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 16px;
+      color: #64748b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .modal-close-btn:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+      transform: scale(1.08);
+    }
+
+    /* ===== POPUP GIẢI THÍCH (CHO HỌC VIÊN) ===== */
+    .modal-header-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .modal-header-sub {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-approved-tag {
+      background: #ecfdf5;
+      color: #059669;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 20px;
+      border: 1px solid #a7f3d0;
+    }
+
+    .concept-tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #0284c7;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+    }
+
+    .detail-section {
+      margin-bottom: 14px;
+    }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #475569;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-body {
+      font-size: 15.5px;
+      line-height: 1.65;
+      color: #1e293b;
+    }
+
+    .example-card {
+      background: #f0f9ff;
+      border-left: 4px solid #0284c7;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #0c4a6e;
+    }
+
+    .source-card {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      color: #334155;
+    }
+
+    .inst-note-box {
+      background: #fefce8;
+      border-left: 4px solid #eab308;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      color: #854d0e;
+      margin-top: 10px;
+    }
+
+    .modal-footer {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-feedback-trigger {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-feedback-trigger:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    /* ===== MODAL CHỈNH SỬA / THÊM MỚI (GIẢNG VIÊN) ===== */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 14.5px;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.15s;
+      color: #0f172a;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+
+    /* ===== FEEDBACK POPUP (SAO SVG) ===== */
+    .star-row {
+      display: flex;
+      gap: 10px;
+      margin: 14px 0 18px;
+    }
+
+    .star-item {
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+      user-select: none;
+    }
+
+    .star-item:hover {
+      transform: scale(1.22);
+    }
+
+    .star-icon {
+      width: 38px;
+      height: 38px;
+      fill: #ffffff;
+      stroke: #94a3b8;
+      stroke-width: 1.5;
+      stroke-linejoin: round;
+      transition: fill 0.15s ease, stroke 0.15s ease;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.06));
+    }
+
+    .star-item.active .star-icon,
+    .star-item.hovered .star-icon {
+      fill: #f59e0b;
+      stroke: #d97706;
+      filter: drop-shadow(0 3px 10px rgba(245, 158, 11, 0.45));
+    }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #0f172a;
+      color: white;
+      padding: 12px 28px;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      z-index: 2000;
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 700px) {
+      .review-content-preview {
+        grid-template-columns: 1fr;
+      }
+
+      .app-topbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .slide-container,
+      .instructor-card {
+        padding: 20px 18px;
+      }
+    }
+  </style>
 </head>
 
-<body data-option="b">
-  <header class="topbar">
-    <a class="brand" href="index.html">VLearn Lab · Day 18</a>
-    <span class="topbar-note">Option B</span>
-  </header>
-  <main class="container prototype-shell">
-    <a class="back-link" href="index.html">← Về common context</a>
-    <section class="prototype-title">
-      <p class="eyebrow" style="color: var(--green)">OPTION B · SMART TOOLTIP</p>
-      <h1>Chọn đúng thuật ngữ, xem giải thích trong vài giây</h1>
-      <p class="lead">User chủ động chọn nội dung cần xem. Hệ thống không tự chẩn đoán lỗ hổng kiến thức.</p>
-    </section>
+<body>
 
-    <section class="panel">
-      <div class="slide-number">Human–AI Design · Slide 12 / 24</div>
-      <div class="slide-content">
-        <h2>G-T-B-D-Hypothesis <button class="term-chip" data-action="b-open" aria-label="Mở giải thích">[?]</button>
-        </h2>
-        <p>Giảng viên vừa chuyển sang phần tiếp theo. Hãy click vào [?] nếu muốn xem định nghĩa và ví dụ ngắn.</p>
-        <div id="b-tooltip" class="tooltip hidden">
-          <strong>Giải thích ngắn</strong>
-          <p>Hypothesis là một dự đoán có thể kiểm tra bằng evidence. Trong bài này, bạn cần phân biệt điều quan sát
-            được với điều nhóm đang diễn giải.</p>
-          <p class="slide-number">Nguồn: Slide 12 · Nội dung đã được chuẩn bị trước cho bài học.</p>
-          <div class="actions">
-            <button class="btn btn-success" data-action="b-close">Đóng và tiếp tục</button>
-            <button class="btn" data-action="b-save">Lưu để xem sau</button>
-          </div>
+  <!-- ============================================================ -->
+  <!-- ===== THANH CHUYỂN ĐỔI VAI TRÒ (ROLE SWITCHER) ===== -->
+  <!-- ============================================================ -->
+  <header class="app-topbar">
+    <div class="topbar-brand">
+      <a href="index.html" style="text-decoration:none; color:#475569; font-size:13px; font-weight:700; background:#f1f5f9; padding:6px 12px; border-radius:8px; border:1px solid #cbd5e1; display:inline-flex; align-items:center; gap:4px; transition:all 0.15s;">
+        ← Về Hub
+      </a>
+      <span>📚 Option B · Smart Tooltip (Hải Yến)</span>
+    </div>
+    <div class="role-switcher-group">
+      <button class="role-btn active" id="btnRoleStudent" data-target="studentView">
+        🎓 Học viên (Student View)
+      </button>
+      <button class="role-btn" id="btnRoleInstructor" data-target="instructorView">
+        👨‍🏫 Giảng viên: AI Review & Phê duyệt
+        <span class="role-badge-count" id="pendingBadge">3 chờ duyệt</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- ===== VIEW 1: GIAO DIỆN HỌC VIÊN (STUDENT VIEW) ===== -->
+  <!-- ============================================================ -->
+  <section class="view-section active" id="studentView">
+    <div class="slide-container">
+      <!-- Header Slide -->
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <h2>📚 Chương 3: Trí tuệ nhân tạo trong giáo dục</h2>
+        </div>
+        <div class="slide-header-right">
+          <span class="badge-session">Buổi 4 · 45 phút</span>
+          <!-- Nút ? góc phải trên -->
+          <button class="btn-help-trigger" id="btnHelpTrigger" title="Xem chú thích & giải thích khái niệm">
+            ?
+          </button>
         </div>
       </div>
-      <div class="actions">
-        <button class="btn btn-quiet" data-action="b-save">Đánh dấu thuật ngữ</button>
+
+      <!-- Thân Slide bài giảng tự nhiên -->
+      <div class="slide-body">
+        <p>
+          Học máy (Machine Learning) là một nhánh của Trí tuệ nhân tạo cho phép máy tính học từ dữ liệu mà
+          không cần lập trình rõ ràng từng bước.
+        </p>
+        <p>
+          Mô hình ngôn ngữ lớn (LLM) như GPT là một loại mô hình học sâu có khả năng sinh văn bản tự nhiên dựa
+          trên ngữ cảnh đầu vào, được huấn luyện trên hàng tỷ tham số.
+        </p>
+        <p>
+          Học tăng cường (Reinforcement Learning) là phương pháp học máy trong đó tác nhân (agent) học cách
+          hành động trong một môi trường để tối đa hóa phần thưởng tích lũy.
+        </p>
       </div>
-    </section>
-    <div id="toast" class="toast hidden" role="status"></div>
-  </main>
-  <script src="prototype.js"></script>
+
+      <!-- Chân Slide -->
+      <div class="slide-footer">
+        <span class="slide-footer-tip">💡 Khi gặp thuật ngữ chưa rõ, bấm vào nút <strong>?</strong> ở góc phải
+          trên để xem giải thích đã được giảng viên phê duyệt.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- ===== VIEW 2: GIAO DIỆN GIẢNG VIÊN (INSTRUCTOR DASHBOARD) ===== -->
+  <!-- ============================================================ -->
+  <section class="view-section" id="instructorView">
+    <div class="instructor-card">
+      <!-- Header Giảng viên -->
+      <div class="instructor-header">
+        <div>
+          <h2>👨‍🏫 Dashboard Quản trị & Phê duyệt Chú thích AI</h2>
+          <p>Slide đang chọn: <strong>Chương 3: Trí tuệ nhân tạo trong giáo dục</strong> (Đã quét 3 slide con)
+          </p>
+        </div>
+        <div class="instructor-actions-top">
+          <button class="btn-inst-action btn-inst-secondary" id="btnAddConcept">
+            ➕ Thêm khái niệm mới
+          </button>
+          <button class="btn-inst-action btn-inst-success" id="btnApproveAll">
+            ✓ Phê duyệt tất cả
+          </button>
+          <button class="btn-inst-action btn-inst-primary" id="btnPublishToStudent">
+            🚀 Xem kết quả ở Màn hình Học viên
+          </button>
+        </div>
+      </div>
+
+      <!-- Banner Năng lực & Giới hạn AI (Chặng 3 Mental Model) -->
+      <div class="ai-capability-banner">
+        <div class="ai-banner-icon">🤖</div>
+        <div class="ai-banner-content">
+          <h4>AI Human-in-the-loop: Đề xuất tự động từ bài giảng</h4>
+          <p>AI đã tự động quét văn bản slide và trích xuất 3 khái niệm quan trọng kèm bản thảo định nghĩa &
+            ví dụ. <strong>Lưu ý:</strong> AI có thể bỏ sót khái niệm chuyên sâu hoặc diễn giải chưa sát ngữ
+            cảnh. Mời Giảng viên review, chỉnh sửa và phê duyệt trước khi xuất bản cho học viên.</p>
+        </div>
+      </div>
+
+      <!-- Danh sách các Card Khái niệm cần Review -->
+      <div class="concept-review-grid" id="conceptReviewList">
+        <!-- Javascript sẽ render động các card từ database -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- ===== POPUP 1: GIẢI THÍCH KHÁI NIỆM (HỌC VIÊN VIEW) ===== -->
+  <!-- ============================================================ -->
+  <div class="modal-backdrop" id="conceptModalBackdrop">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="btnCloseConceptModal" title="Đóng (ESC)">✕</button>
+
+      <div class="modal-header-title">
+        <span>💡 Chú thích & Giải thích khái niệm</span>
+      </div>
+      <div class="modal-header-sub">
+        <span class="badge-approved-tag">✓ Đã được giảng viên phê duyệt</span>
+        <span>· Trích xuất theo ngữ cảnh slide</span>
+      </div>
+
+      <!-- Tabs chọn khái niệm (chỉ hiển thị những khái niệm ĐÃ PHÊ DUYỆT) -->
+      <div class="concept-tabs" id="conceptTabs"></div>
+
+      <!-- Nội dung chi tiết của tab đang chọn -->
+      <div class="concept-content-box" id="conceptContentBox">
+        <div style="font-size:18px; font-weight:700; color:#0f172a; margin-bottom:12px;" id="popupConceptTitle">
+        </div>
+
+        <div class="detail-section">
+          <div class="section-label">📖 Định nghĩa ngắn gọn</div>
+          <div class="section-body" id="popupConceptDef"></div>
+        </div>
+
+        <div class="detail-section">
+          <div class="section-label">💡 Ví dụ trực quan</div>
+          <div class="example-card" id="popupConceptExample"></div>
+        </div>
+
+        <div class="detail-section">
+          <div class="section-label">📚 Nguồn trích xuất</div>
+          <div class="source-card" id="popupConceptSource"></div>
+        </div>
+
+        <!-- Ghi chú riêng của giảng viên (nếu có) -->
+        <div class="inst-note-box" id="popupInstNoteBox" style="display:none;">
+          <strong>📌 Lưu ý từ Giảng viên:</strong> <span id="popupInstNoteText"></span>
+        </div>
+      </div>
+
+      <!-- Footer Pop-up: Có nút Phản hồi góc dưới bên trái và Đóng bên phải -->
+      <div class="modal-footer">
+        <button class="btn-feedback-trigger" id="btnConceptFeedback">
+          📝 Phản hồi về tính năng
+        </button>
+        <button class="btn-inst-action btn-inst-secondary" id="btnDismissConcept"
+          style="padding:8px 20px; border-radius:30px;">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- ===== POPUP 2: MODAL CHỈNH SỬA / THÊM MỚI (GIẢNG VIÊN) ===== -->
+  <!-- ============================================================ -->
+  <div class="modal-backdrop" id="editModalBackdrop">
+    <div class="modal-card" style="max-width: 620px;">
+      <button class="modal-close-btn" id="btnCloseEditModal">✕</button>
+
+      <div class="modal-header-title">
+        <span id="editModalHeaderTitle">✏️ Chỉnh sửa Chú thích Khái niệm</span>
+      </div>
+      <div class="modal-header-sub">
+        Nội dung chỉnh sửa sẽ được cập nhật trực tiếp lên màn hình học viên sau khi lưu.
+      </div>
+
+      <form id="editConceptForm">
+        <input type="hidden" id="editConceptId" />
+
+        <div class="form-group">
+          <label>Tên thuật ngữ / Khái niệm</label>
+          <input type="text" class="form-input" id="inputConceptTitle" required placeholder="VD: Machine Learning..." />
+        </div>
+
+        <div class="form-group">
+          <label>Định nghĩa ngắn gọn (dành cho học viên đọc dưới 15s)</label>
+          <textarea class="form-textarea" id="inputConceptDef" rows="3" required
+            placeholder="Nhập định nghĩa cô đọng..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Ví dụ minh họa thực tế</label>
+          <textarea class="form-textarea" id="inputConceptExample" rows="2" required
+            placeholder="Nhập ví dụ trực quan..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Nguồn trích dẫn / Giáo trình</label>
+          <input type="text" class="form-input" id="inputConceptSource"
+            placeholder="VD: Giáo trình AI cơ bản, Chương 2" />
+        </div>
+
+        <div class="form-group">
+          <label>Ghi chú nhấn mạnh của Giảng viên (Hiển thị kèm cho học viên)</label>
+          <input type="text" class="form-input" id="inputConceptNote"
+            placeholder="VD: Khái niệm này sẽ xuất hiện trong bài kiểm tra giữa kỳ..." />
+        </div>
+
+        <div class="modal-footer" style="margin-top:16px;">
+          <button type="button" class="btn-inst-action btn-inst-secondary" id="btnCancelEdit">Hủy</button>
+          <button type="submit" class="btn-inst-action btn-inst-primary">Lưu & Phê duyệt ngay</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- ===== POPUP 3: ĐÁNH GIÁ & PHẢN HỒI (HỌC VIÊN FEEDBACK) ===== -->
+  <!-- ============================================================ -->
+  <div class="modal-backdrop" id="feedbackModalBackdrop">
+    <div class="modal-card" style="max-width: 520px;">
+      <button class="modal-close-btn" id="btnCloseFeedbackModal">✕</button>
+
+      <div class="modal-header-title">
+        <span>📝 Đánh giá & Phản hồi</span>
+      </div>
+      <div class="modal-header-sub">
+        Giúp giảng viên và hệ thống hoàn thiện nội dung giải thích tốt hơn.
+      </div>
+
+      <div style="font-weight:600; font-size:14.5px; color:#1e293b; margin-top:6px;">
+        Bạn đánh giá thế nào về tính năng này?
+      </div>
+
+      <!-- Hàng sao SVG màu trắng -> hover vàng -> click ấn định -->
+      <div class="star-row" id="starRow">
+        <div class="star-item" data-star="1" title="1 sao - Kém">
+          <svg class="star-icon" viewBox="0 0 24 24">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+          </svg>
+        </div>
+        <div class="star-item" data-star="2" title="2 sao - Bình thường">
+          <svg class="star-icon" viewBox="0 0 24 24">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+          </svg>
+        </div>
+        <div class="star-item" data-star="3" title="3 sao - Ổn">
+          <svg class="star-icon" viewBox="0 0 24 24">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+          </svg>
+        </div>
+        <div class="star-item" data-star="4" title="4 sao - Tốt">
+          <svg class="star-icon" viewBox="0 0 24 24">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+          </svg>
+        </div>
+        <div class="star-item" data-star="5" title="5 sao - Rất hữu ích">
+          <svg class="star-icon" viewBox="0 0 24 24">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+          </svg>
+        </div>
+      </div>
+
+      <label style="font-weight:600; font-size:14px; display:block; color:#1e293b;">
+        💬 Góp ý thêm (không bắt buộc)
+      </label>
+      <textarea class="form-textarea" id="feedbackText" rows="3"
+        placeholder="Hãy cho chúng tôi biết cảm nhận hoặc đề xuất của bạn..." style="margin-top:6px;"></textarea>
+
+      <div class="modal-footer" style="margin-top:16px;">
+        <button type="button" class="btn-inst-action btn-inst-secondary" id="btnCancelFeedback">Bỏ qua</button>
+        <button type="button" class="btn-inst-action btn-inst-primary" id="btnSubmitFeedback">Gửi phản
+          hồi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST THÔNG BÁO ===== -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ============================================================ -->
+  <!-- ===== JAVASCRIPT HỆ THỐNG ===== -->
+  <!-- ============================================================ -->
+  <script>
+    (function () {
+      'use strict';
+
+      // ---------- DỮ LIỆU ĐỀ XUẤT TỪ AI (STATE DÙNG CHUNG) ----------
+      let conceptsDatabase = [
+        {
+          id: 'ml',
+          title: 'Machine Learning (Học máy)',
+          icon: '🧠',
+          def: 'Machine Learning là một nhánh của Trí tuệ nhân tạo cho phép hệ thống tự học và cải thiện từ dữ liệu mà không cần lập trình rõ ràng từng bước.',
+          example: 'Hệ thống gợi ý sản phẩm trên Amazon học từ lịch sử mua hàng của bạn để đề xuất các mặt hàng phù hợp tiếp theo.',
+          source: 'Giáo trình AI cơ bản, Chương 2, trang 15',
+          teacherNote: '',
+          status: 'approved', // 'pending' | 'approved' | 'rejected'
+          aiConfidence: '95%',
+          aiReason: 'Thuật ngữ cốt lõi, xuất hiện 6 lần trong slide & giáo trình.',
+          priority: 'Ưu tiên Cao'
+        },
+        {
+          id: 'llm',
+          title: 'Mô hình ngôn ngữ lớn (LLM)',
+          icon: '🤖',
+          def: 'LLM là một loại mô hình học sâu có khả năng hiểu và sinh văn bản tự nhiên dựa trên ngữ cảnh đầu vào, được huấn luyện trên hàng tỷ tham số.',
+          example: 'ChatGPT (GPT-4) có thể trả lời câu hỏi phức tạp, tóm tắt bài giảng và viết code chỉ từ một câu prompt ngắn.',
+          source: 'Deep Learning Foundations, Chương 12 (NXB MIT Press)',
+          teacherNote: '',
+          status: 'pending',
+          aiConfidence: '91%',
+          aiReason: 'Từ khóa mới quan trọng, học viên thường gặp khó khăn.',
+          priority: 'Ưu tiên Cao'
+        },
+        {
+          id: 'rl',
+          title: 'Học tăng cường (Reinforcement Learning)',
+          icon: '🎮',
+          def: 'Học tăng cường là phương pháp học máy trong đó một tác nhân (agent) tự học cách đưa ra chuỗi hành động trong môi trường để tối đa hóa phần thưởng tích lũy qua thử và sai.',
+          example: 'AlphaGo sử dụng học tăng cường để tự chơi hàng triệu ván cờ với chính nó và đánh bại các kỳ thủ cờ vây hàng đầu thế giới.',
+          source: 'Reinforcement Learning: An Introduction',
+          teacherNote: '',
+          status: 'pending',
+          aiConfidence: '82%',
+          aiWarning: '⚠️ AI không đủ dữ liệu chắc chắn về cách dùng trong slide này. Đề nghị giảng viên kiểm tra kỹ.',
+          aiReason: 'Khái niệm nâng cao, xuất hiện ở cuối slide 3.',
+          priority: 'Ưu tiên Trung bình'
+        }
+      ];
+
+      // ---------- DOM REFS ----------
+      const btnRoleStudent = document.getElementById('btnRoleStudent');
+      const btnRoleInstructor = document.getElementById('btnRoleInstructor');
+      const studentView = document.getElementById('studentView');
+      const instructorView = document.getElementById('instructorView');
+      const pendingBadge = document.getElementById('pendingBadge');
+
+      // Instructor Dashboard
+      const conceptReviewList = document.getElementById('conceptReviewList');
+      const btnApproveAll = document.getElementById('btnApproveAll');
+      const btnAddConcept = document.getElementById('btnAddConcept');
+      const btnPublishToStudent = document.getElementById('btnPublishToStudent');
+
+      // Edit Modal
+      const editModalBackdrop = document.getElementById('editModalBackdrop');
+      const btnCloseEditModal = document.getElementById('btnCloseEditModal');
+      const btnCancelEdit = document.getElementById('btnCancelEdit');
+      const editConceptForm = document.getElementById('editConceptForm');
+      const editModalHeaderTitle = document.getElementById('editModalHeaderTitle');
+      const editConceptId = document.getElementById('editConceptId');
+      const inputConceptTitle = document.getElementById('inputConceptTitle');
+      const inputConceptDef = document.getElementById('inputConceptDef');
+      const inputConceptExample = document.getElementById('inputConceptExample');
+      const inputConceptSource = document.getElementById('inputConceptSource');
+      const inputConceptNote = document.getElementById('inputConceptNote');
+
+      // Student Concept Pop-up
+      const btnHelpTrigger = document.getElementById('btnHelpTrigger');
+      const conceptModalBackdrop = document.getElementById('conceptModalBackdrop');
+      const btnCloseConceptModal = document.getElementById('btnCloseConceptModal');
+      const btnDismissConcept = document.getElementById('btnDismissConcept');
+      const btnConceptFeedback = document.getElementById('btnConceptFeedback');
+      const conceptTabs = document.getElementById('conceptTabs');
+      const popupConceptTitle = document.getElementById('popupConceptTitle');
+      const popupConceptDef = document.getElementById('popupConceptDef');
+      const popupConceptExample = document.getElementById('popupConceptExample');
+      const popupConceptSource = document.getElementById('popupConceptSource');
+      const popupInstNoteBox = document.getElementById('popupInstNoteBox');
+      const popupInstNoteText = document.getElementById('popupInstNoteText');
+
+      // Feedback Modal
+      const feedbackModalBackdrop = document.getElementById('feedbackModalBackdrop');
+      const btnCloseFeedbackModal = document.getElementById('btnCloseFeedbackModal');
+      const btnCancelFeedback = document.getElementById('btnCancelFeedback');
+      const btnSubmitFeedback = document.getElementById('btnSubmitFeedback');
+      const starRow = document.getElementById('starRow');
+      const starItems = starRow.querySelectorAll('.star-item');
+      const feedbackText = document.getElementById('feedbackText');
+
+      const toast = document.getElementById('toast');
+
+      // ---------- STATE ----------
+      let currentStudentTabId = '';
+      let selectedStar = 0;
+      let toastTimer = null;
+
+      // ============================================================
+      // ===== 1. QUẢN LÝ CHUYỂN ĐỔI VAI TRÒ =====
+      // ============================================================
+      function switchRole(role) {
+        if (role === 'student') {
+          btnRoleStudent.classList.add('active');
+          btnRoleInstructor.classList.remove('active');
+          studentView.classList.add('active');
+          instructorView.classList.remove('active');
+        } else {
+          btnRoleInstructor.classList.add('active');
+          btnRoleStudent.classList.remove('active');
+          instructorView.classList.add('active');
+          studentView.classList.remove('active');
+          renderInstructorDashboard();
+        }
+      }
+
+      btnRoleStudent.addEventListener('click', () => switchRole('student'));
+      btnRoleInstructor.addEventListener('click', () => switchRole('instructor'));
+
+      btnPublishToStudent.addEventListener('click', () => {
+        switchRole('student');
+        showToast('🚀 Đã chuyển sang Màn hình Học viên!');
+      });
+
+      // ============================================================
+      // ===== 2. GIẢNG VIÊN DASHBOARD (RENDER & ACTIONS) =====
+      // ============================================================
+      function updatePendingBadge() {
+        const pendingCount = conceptsDatabase.filter(c => c.status === 'pending').length;
+        if (pendingCount > 0) {
+          pendingBadge.textContent = `${pendingCount} chờ duyệt`;
+          pendingBadge.style.display = 'inline-block';
+        } else {
+          pendingBadge.textContent = `✓ Đã duyệt hết`;
+          pendingBadge.style.background = '#10b981';
+        }
+      }
+
+      function renderInstructorDashboard() {
+        conceptReviewList.innerHTML = '';
+        updatePendingBadge();
+
+        conceptsDatabase.forEach(item => {
+          const card = document.createElement('div');
+          card.className = `review-card status-${item.status}`;
+          card.id = `card-${item.id}`;
+
+          let statusBadgeHtml = '';
+          if (item.status === 'approved') {
+            statusBadgeHtml = `<span class="badge-pill badge-status badge-status-approved">✓ Đã phê duyệt</span>`;
+          } else if (item.status === 'rejected') {
+            statusBadgeHtml = `<span class="badge-pill badge-status badge-status-rejected">✕ Đã từ chối</span>`;
+          } else {
+            statusBadgeHtml = `<span class="badge-pill badge-status badge-status-pending">⏳ Chờ duyệt</span>`;
+          }
+
+          const warningHtml = item.aiWarning ? `
+                        <div class="ai-warning-box">
+                            <span>${item.aiWarning}</span>
+                        </div>
+                    ` : '';
+
+          const teacherNoteHtml = item.teacherNote ? `
+                        <div style="font-size:13px; color:#854d0e; background:#fefce8; padding:6px 10px; border-radius:6px; margin-bottom:10px;">
+                            <strong>📌 Lưu ý của bạn:</strong> ${item.teacherNote}
+                        </div>
+                    ` : '';
+
+          card.innerHTML = `
+                        <div class="review-card-top">
+                            <div class="review-card-title">
+                                <span>${item.icon || '📌'} ${item.title}</span>
+                            </div>
+                            <div class="review-badges">
+                                <span class="badge-pill badge-confidence-high">Độ tin cậy AI: ${item.aiConfidence}</span>
+                                <span class="badge-pill badge-priority">${item.priority}</span>
+                                ${statusBadgeHtml}
+                            </div>
+                        </div>
+
+                        <div class="ai-reasoning-box">
+                            <span>💡 <strong>Lý do AI đề xuất:</strong> ${item.aiReason}</span>
+                        </div>
+
+                        ${warningHtml}
+
+                        <div class="review-content-preview">
+                            <div class="preview-block">
+                                <h5>📖 Định nghĩa bản thảo</h5>
+                                <p>${item.def}</p>
+                            </div>
+                            <div class="preview-block">
+                                <h5>💡 Ví dụ minh họa</h5>
+                                <p>${item.example}</p>
+                            </div>
+                        </div>
+
+                        ${teacherNoteHtml}
+
+                        <div style="font-size:12.5px; color:#64748b; margin-bottom:12px;">
+                            <strong>Nguồn tham chiếu:</strong> ${item.source}
+                        </div>
+
+                        <div class="review-actions-bottom">
+                            <button class="btn-inst-action btn-inst-secondary" onclick="window.handleEditConcept('${item.id}')">
+                                ✏️ Chỉnh sửa nội dung
+                            </button>
+                            ${item.status !== 'approved' ? `
+                                <button class="btn-inst-action btn-inst-success" onclick="window.handleApproveConcept('${item.id}')">
+                                    ✓ Phê duyệt
+                                </button>
+                            ` : `
+                                <button class="btn-inst-action btn-inst-secondary" onclick="window.handleRejectConcept('${item.id}')">
+                                    ✕ Thu hồi / Ẩn
+                                </button>
+                            `}
+                        </div>
+                    `;
+
+          conceptReviewList.appendChild(card);
+        });
+      }
+
+      // Expose handler ra window cho các nút trong card
+      window.handleApproveConcept = function (id) {
+        const item = conceptsDatabase.find(c => c.id === id);
+        if (item) {
+          item.status = 'approved';
+          renderInstructorDashboard();
+          showToast(`✅ Đã phê duyệt: "${item.title}"`);
+        }
+      };
+
+      window.handleRejectConcept = function (id) {
+        const item = conceptsDatabase.find(c => c.id === id);
+        if (item) {
+          item.status = 'rejected';
+          renderInstructorDashboard();
+          showToast(`✕ Đã ẩn khái niệm: "${item.title}"`);
+        }
+      };
+
+      window.handleEditConcept = function (id) {
+        const item = conceptsDatabase.find(c => c.id === id);
+        if (!item) return;
+
+        editModalHeaderTitle.textContent = `✏️ Chỉnh sửa: ${item.title}`;
+        editConceptId.value = item.id;
+        inputConceptTitle.value = item.title;
+        inputConceptDef.value = item.def;
+        inputConceptExample.value = item.example;
+        inputConceptSource.value = item.source;
+        inputConceptNote.value = item.teacherNote || '';
+
+        editModalBackdrop.classList.add('active');
+      };
+
+      // Phê duyệt tất cả
+      btnApproveAll.addEventListener('click', () => {
+        conceptsDatabase.forEach(c => {
+          c.status = 'approved';
+        });
+        renderInstructorDashboard();
+        showToast('✅ Đã phê duyệt toàn bộ danh sách khái niệm!');
+      });
+
+      // Thêm mới khái niệm thủ công
+      btnAddConcept.addEventListener('click', () => {
+        editModalHeaderTitle.textContent = '➕ Thêm Khái niệm mới (Giảng viên)';
+        editConceptId.value = 'new_' + Date.now();
+        inputConceptTitle.value = '';
+        inputConceptDef.value = '';
+        inputConceptExample.value = '';
+        inputConceptSource.value = 'Giáo trình Chương 3';
+        inputConceptNote.value = '';
+
+        editModalBackdrop.classList.add('active');
+      });
+
+      // Đóng Modal Edit
+      function closeEditModal() {
+        editModalBackdrop.classList.remove('active');
+      }
+      btnCloseEditModal.addEventListener('click', closeEditModal);
+      btnCancelEdit.addEventListener('click', closeEditModal);
+
+      // Lưu form Edit / Add
+      editConceptForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const id = editConceptId.value;
+        let item = conceptsDatabase.find(c => c.id === id);
+
+        if (item) {
+          item.title = inputConceptTitle.value.trim();
+          item.def = inputConceptDef.value.trim();
+          item.example = inputConceptExample.value.trim();
+          item.source = inputConceptSource.value.trim();
+          item.teacherNote = inputConceptNote.value.trim();
+          item.status = 'approved';
+          showToast(`✅ Đã lưu và phê duyệt: "${item.title}"`);
+        } else {
+          // Thêm mới
+          const newItem = {
+            id: id,
+            title: inputConceptTitle.value.trim(),
+            icon: '📌',
+            def: inputConceptDef.value.trim(),
+            example: inputConceptExample.value.trim(),
+            source: inputConceptSource.value.trim(),
+            teacherNote: inputConceptNote.value.trim(),
+            status: 'approved',
+            aiConfidence: '100% (Giảng viên tạo)',
+            aiReason: 'Do giảng viên bổ sung thủ công.',
+            priority: 'Ưu tiên Cao'
+          };
+          conceptsDatabase.push(newItem);
+          showToast(`✅ Đã tạo và xuất bản khái niệm mới!`);
+        }
+
+        closeEditModal();
+        renderInstructorDashboard();
+      });
+
+      // ============================================================
+      // ===== 3. HỌC VIÊN VIEW (POP-UP GIẢI THÍCH) =====
+      // ============================================================
+      function renderStudentPopup(activeId) {
+        // Chỉ lấy những khái niệm ĐÃ ĐƯỢC DUYỆT
+        const approvedList = conceptsDatabase.filter(c => c.status === 'approved');
+
+        if (approvedList.length === 0) {
+          conceptTabs.innerHTML = '';
+          popupConceptTitle.textContent = 'Chưa có chú thích nào được phê duyệt';
+          popupConceptDef.textContent = 'Giảng viên đang xem xét danh sách chú thích cho slide này. Vui lòng kiểm tra lại sau.';
+          popupConceptExample.textContent = 'Chưa có dữ liệu';
+          popupConceptSource.textContent = 'Chưa có dữ liệu';
+          popupInstNoteBox.style.display = 'none';
+          return;
+        }
+
+        // Chọn tab đầu tiên nếu chưa chọn hoặc id không tồn tại
+        let currentItem = approvedList.find(c => c.id === activeId);
+        if (!currentItem) {
+          currentItem = approvedList[0];
+        }
+        currentStudentTabId = currentItem.id;
+
+        // Render tabs
+        conceptTabs.innerHTML = '';
+        approvedList.forEach(item => {
+          const btn = document.createElement('button');
+          btn.className = `tab-btn ${item.id === currentStudentTabId ? 'active' : ''}`;
+          btn.textContent = `${item.icon || '📌'} ${item.title}`;
+          btn.addEventListener('click', () => {
+            renderStudentPopup(item.id);
+          });
+          conceptTabs.appendChild(btn);
+        });
+
+        // Render detail
+        popupConceptTitle.textContent = `${currentItem.icon || '📌'} ${currentItem.title}`;
+        popupConceptDef.textContent = currentItem.def;
+        popupConceptExample.textContent = currentItem.example;
+        popupConceptSource.textContent = currentItem.source;
+
+        if (currentItem.teacherNote) {
+          popupInstNoteText.textContent = currentItem.teacherNote;
+          popupInstNoteBox.style.display = 'block';
+        } else {
+          popupInstNoteBox.style.display = 'none';
+        }
+      }
+
+      function openConceptModal() {
+        renderStudentPopup(currentStudentTabId);
+        conceptModalBackdrop.classList.add('active');
+      }
+
+      function closeConceptModal() {
+        conceptModalBackdrop.classList.remove('active');
+      }
+
+      btnHelpTrigger.addEventListener('click', openConceptModal);
+      btnCloseConceptModal.addEventListener('click', closeConceptModal);
+      btnDismissConcept.addEventListener('click', closeConceptModal);
+
+      conceptModalBackdrop.addEventListener('click', (e) => {
+        if (e.target === conceptModalBackdrop) closeConceptModal();
+      });
+
+      // Chuyển sang feedback từ trong popup
+      btnConceptFeedback.addEventListener('click', () => {
+        closeConceptModal();
+        feedbackModalBackdrop.classList.add('active');
+      });
+
+      // ============================================================
+      // ===== 4. FEEDBACK POPUP (ĐÁNH GIÁ SAO) =====
+      // ============================================================
+      function updateStarDisplay(val) {
+        starItems.forEach(item => {
+          const star = parseInt(item.dataset.star);
+          item.classList.toggle('active', star <= val);
+        });
+      }
+
+      function previewStars(val) {
+        starItems.forEach(item => {
+          const star = parseInt(item.dataset.star);
+          item.classList.toggle('hovered', star <= val);
+        });
+      }
+
+      starItems.forEach(el => {
+        el.addEventListener('click', function () {
+          const starVal = parseInt(this.dataset.star);
+          selectedStar = starVal;
+          starItems.forEach(item => item.classList.remove('hovered'));
+          updateStarDisplay(selectedStar);
+        });
+
+        el.addEventListener('mouseenter', function () {
+          const starVal = parseInt(this.dataset.star);
+          previewStars(starVal);
+        });
+      });
+
+      starRow.addEventListener('mouseleave', function () {
+        starItems.forEach(item => item.classList.remove('hovered'));
+        updateStarDisplay(selectedStar);
+      });
+
+      function closeFeedbackModal() {
+        feedbackModalBackdrop.classList.remove('active');
+      }
+      btnCloseFeedbackModal.addEventListener('click', closeFeedbackModal);
+      btnCancelFeedback.addEventListener('click', closeFeedbackModal);
+
+      btnSubmitFeedback.addEventListener('click', () => {
+        const comment = feedbackText.value.trim();
+        if (selectedStar === 0 && !comment) {
+          showToast('⚠️ Vui lòng chọn số sao hoặc viết góp ý');
+          return;
+        }
+        showToast('✅ Cảm ơn bạn đã gửi phản hồi!');
+        selectedStar = 0;
+        updateStarDisplay(0);
+        starItems.forEach(item => item.classList.remove('active', 'hovered'));
+        feedbackText.value = '';
+        closeFeedbackModal();
+      });
+
+      // ============================================================
+      // ===== 5. TOAST & PHÍM TẮT =====
+      // ============================================================
+      function showToast(msg) {
+        if (toastTimer) {
+          clearTimeout(toastTimer);
+          toast.classList.remove('show');
+        }
+        toast.textContent = msg;
+        toast.classList.add('show');
+        toastTimer = setTimeout(() => {
+          toast.classList.remove('show');
+          toastTimer = null;
+        }, 2800);
+      }
+
+      document.addEventListener('keydown', function (e) {
+        const isTyping = ['INPUT', 'TEXTAREA'].includes(e.target.tagName) || e.target.isContentEditable;
+        if (e.key === 'Escape') {
+          if (isTyping) {
+            e.target.blur();
+            return;
+          }
+          if (conceptModalBackdrop.classList.contains('active')) closeConceptModal();
+          else if (editModalBackdrop.classList.contains('active')) closeEditModal();
+          else if (feedbackModalBackdrop.classList.contains('active')) closeFeedbackModal();
+        }
+      });
+
+      // Khởi tạo
+      renderInstructorDashboard();
+      console.log('✅ Prototype 2 Luồng (Học viên & Giảng viên) đã sẵn sàng!');
+    })();
+  </script>
+
 </body>
 
 </html>
