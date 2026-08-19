@@ -1,9 +1,5 @@
 # Feedback kiểm thử người dùng — Day 18
 
-> Feedback giả lập từ hai người dùng. Mỗi option chỉ ghi lại điểm tích cực và điểm vướng.
-
-## Người dùng 1
-
 ### Option A — AI Diagnostic Refresher
 
 - **Điểm tích cực:** AI giúp xác định kiến thức nền còn thiếu và đưa ra phần ôn tập phù hợp.
