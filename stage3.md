@@ -81,11 +81,11 @@ User duyệt nội dung trước khi gửi. AI tóm tắt và đề xuất wordi
 
 #### Evidence and Uncertainty
 
-Màn hình preview cho thấy slide, thuật ngữ và câu hỏi sẽ được gửi. Trạng thái chờ phản hồi phải rõ ràng; không tạo cảm giác câu hỏi đã được giải quyết.
+Màn hình preview cho thấy slide, thuật ngữ và câu hỏi sẽ được gửi. Trạng thái chờ phản hồi phải rõ ràng; sau đó phản hồi theo context cần được hiển thị như một phần mô phỏng để người học thấy cơ chế có thể giải quyết phần chưa hiểu.
 
 #### Control and Recovery
 
-User có thể sửa, hủy, không gửi, gửi ẩn danh, quay lại bài và xem lại câu hỏi sau.
+User có thể sửa, hủy, không gửi, gửi ẩn danh, xem phản hồi, hỏi tiếp hoặc quay lại bài.
 
 ## 4. Kiểm tra dữ liệu và feedback
 
@@ -113,7 +113,7 @@ Chỉ critical interaction khác:
 | ----------------------- | ---------------------------------- | ------------------------------- | ------------------------------------ |
 | 1. Common context       | Slide có nút “Tôi vẫn chưa hiểu”   | Slide có tooltip cạnh thuật ngữ | Slide có nút “Hỏi người hỗ trợ”      |
 | 2. Critical interaction | Câu hỏi chẩn đoán + ôn tập AI      | Tooltip định nghĩa/ví dụ        | Preview câu hỏi + gửi ẩn danh        |
-| 3. User decision        | Tiếp tục, retry, lưu hoặc quay lại | Đóng, mở thêm hoặc lưu          | Gửi, hủy, chờ phản hồi hoặc quay lại |
+| 3. User decision        | Tiếp tục, retry, lưu hoặc quay lại | Đóng, mở thêm hoặc lưu          | Gửi, xem phản hồi, hỏi tiếp hoặc quay lại |
 
 ## 6. Tự kiểm — GATE 3: Human control
 

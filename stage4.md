@@ -38,9 +38,11 @@ Prototype của Nguyễn Thị Hải Yến được chọn làm chuẩn trình b
 ### Option C — Anonymous Human Escalation
 
 - User chọn hỏi người hỗ trợ.
+- User bôi đen thuật ngữ đang vướng; nút “Hỏi người hỗ trợ” xuất hiện ngay cạnh vùng chọn.
 - AI chuẩn bị context và câu hỏi.
 - User duyệt, chỉnh sửa hoặc hủy trước khi gửi ẩn danh.
-- User quay lại bài trong khi chờ phản hồi.
+- User thấy trạng thái chờ, sau đó xem phản hồi theo đúng context của slide.
+- User chọn “Đã hiểu — tiếp tục bài” hoặc “Vẫn chưa rõ — hỏi tiếp”.
 
 ## 3. Prototype annotation
 
@@ -48,7 +50,7 @@ Prototype của Nguyễn Thị Hải Yến được chọn làm chuẩn trình b
 |---|---|---|---|
 | A | Yêu cầu AI, trả lời câu hỏi ngắn, đọc gợi ý và quyết định quay lại bài | AI có được hiểu là gợi ý không; câu hỏi có làm mất thời gian không | Cách AI chẩn đoán |
 | B | Tự nhận ra nút/thuật ngữ tương tác, mở popup và tiếp tục | Tester có nhìn thấy affordance và hiểu nội dung nhanh không | Vị trí nút và nội dung popup |
-| C | Mở kênh hỏi, review context, rồi gửi hoặc hủy | Tester có hiểu dữ liệu sẽ gửi và trạng thái chờ phản hồi không | AI đang tóm tắt context thế nào |
+| C | Bôi đen thuật ngữ, mở kênh hỏi, review context, gửi ẩn danh, đọc phản hồi và quyết định tiếp tục/hỏi tiếp | Tester có nhận ra nút nổi không; có hiểu dữ liệu sẽ gửi không; phản hồi có giúp họ nắm ý chính và tiếp tục bài không | AI đang tóm tắt context thế nào; người hỗ trợ trả lời ra sao |
 
 ## 4. Definition of testable
 

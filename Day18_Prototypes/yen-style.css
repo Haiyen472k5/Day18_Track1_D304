@@ -240,6 +240,30 @@ textarea { width: 100%; min-height: 105px; padding: 12px 16px; border: 1.5px sol
 .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #fff; padding: 12px 28px; border-radius: 40px; font-weight: 500; font-size: 14.5px; box-shadow: 0 10px 30px rgba(0,0,0,.25); z-index: 2000; opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+.selection-action {
+  position: fixed;
+  z-index: 1600;
+  width: 36px;
+  height: 36px;
+}
+
+.selection-action.hidden { display: none; }
+.selection-action button {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: #38bdf8;
+  color: #082f49;
+  border: 2px solid #e0f2fe;
+  border-radius: 50%;
+  font-size: 19px;
+  line-height: 1;
+  font-weight: 900;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, .24);
+}
+
+.selection-action button:hover { background: #7dd3fc; transform: scale(1.08); }
+
 @media (max-width: 650px) {
   .slide-container { padding: 24px 20px; }
   .slide-header h2 { font-size: 18px; }

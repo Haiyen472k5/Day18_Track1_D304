@@ -63,7 +63,8 @@ Flow:
 
 1. Common context: user gặp khó khăn và chọn “Hỏi người hỗ trợ ẩn danh”.
 2. Preview: AI chuẩn bị câu hỏi và context; user có thể sửa, duyệt hoặc hủy.
-3. Sent/recovery: câu hỏi ở trạng thái chờ phản hồi; user quay lại bài và giữ được mốc slide.
+3. Sent: câu hỏi ở trạng thái chờ phản hồi; user có thể tiếp tục bài và giữ được mốc slide.
+4. Response/recovery: user xem phản hồi theo context, chọn “Đã hiểu — tiếp tục bài” hoặc hỏi tiếp.
 
 [Mở Option C](../../Day18_Prototypes/option-c.html)
 
@@ -99,8 +100,8 @@ Prototype được xem là test-ready khi:
 
 ### Option C
 
-- **We expect the tester to:** Chọn hỏi người hỗ trợ, review context, chỉnh câu hỏi nếu cần và quyết định gửi ẩn danh hoặc quay lại.
-- **Watch for:** Tester có tin tưởng nội dung AI chuẩn bị không; có hiểu dữ liệu nào sẽ được gửi không; trạng thái chờ phản hồi có khiến họ tiếp tục bài không.
+- **We expect the tester to:** Bôi đen thuật ngữ, mở nút hỏi người hỗ trợ, review context, chỉnh câu hỏi nếu cần, gửi ẩn danh, đọc phản hồi và quyết định tiếp tục hoặc hỏi tiếp.
+- **Watch for:** Tester có nhận ra nút nổi cạnh vùng chọn không; có hiểu dữ liệu nào sẽ được gửi không; phản hồi có giúp họ nắm ý chính không; họ có nhận ra quyền hỏi tiếp và quay lại bài không.
 - **Do not explain:** AI đang tóm tắt context hoặc tại sao nên gửi câu hỏi.
 
 ## 5. Build order
