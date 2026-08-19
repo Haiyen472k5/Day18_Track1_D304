@@ -66,7 +66,7 @@ Vì vậy, nhóm quyết định:
 
 ### Option A — AI Diagnostic Refresher
 
-**Người phụ trách chính:** Đồng Đại Huy  
+**Người phụ trách chính:** Lê Đình Việt  
 **Insight đóng góp:** Lê Đình Việt và Đồng Đại Huy
 
 #### Solution mechanism
@@ -130,7 +130,7 @@ Option B rất nhanh, ít làm mất mạch học và không yêu cầu người
 
 ### Option C — Anonymous Question Queue / Human Escalation
 
-**Người phụ trách chính:** Lê Đình Việt — cần xác nhận lại với nhóm
+**Người phụ trách chính:** Đồng Đại Huy
 
 #### Solution mechanism
 
@@ -193,17 +193,17 @@ Ba options khác nhau về mechanism, agency, tốc độ phản hồi và nơi 
 
 **Nhóm đạt GATE 2 — Meaningful Options**, với điều kiện nhóm chính thức giữ cách phân công sau:
 
-- Đồng Đại Huy: Option A — AI Diagnostic Refresher.
+- Lê Đình Việt: Option A — AI Diagnostic Refresher.
 - Nguyễn Thị Hải Yến: Option B — Smart Tooltip / Contextual Concept Note.
-- Lê Đình Việt: Option C — Anonymous Question Queue / Human Escalation.
+- Đồng Đại Huy: Option C — Anonymous Question Queue / Human Escalation.
 
 Đề xuất AI Diagnostic Refresher của Lê được ghi nhận là insight hỗ trợ cho Option A, không tách thành một option thứ tư hoặc một option trùng với Option A.
 
 ## 8. Việc cần hoàn tất sau Gate 2
 
-- Lê Đình Việt cập nhật report cá nhân từ AI Diagnostic Refresher sang Option C, hoặc xác nhận người khác sẽ phụ trách Option C.
+- Lê Đình Việt giữ và hoàn thiện report cá nhân cho Option A.
 - Nguyễn Thị Hải Yến bổ sung rõ content fixture và giới hạn của tooltip.
-- Đồng Đại Huy giữ report cá nhân cho Option A và chuẩn bị chuyển sang Human–AI Design ở Chặng 3.
+- Đồng Đại Huy cập nhật report cá nhân sang Option C và chuẩn bị prototype Human Escalation.
 - Cả nhóm thống nhất cùng một slide, thuật ngữ và task test.
 - Không được build Option A và đề xuất ban đầu của Lê thành hai prototype riêng vì chúng chưa đủ khác biệt.
 
