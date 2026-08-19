@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prototype - Ghi chú & giải thích khái niệm (Popup Model)</title>
+    <style>
+        /* ===== RESET & GLOBAL ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background: #e9eef5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #1e293b;
+        }
+
+        /* ===== SLIDE CONTAINER ===== */
+        .slide-container {
+            max-width: 940px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 36px 42px 32px;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.1);
+            position: relative;
+            min-height: 520px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* ===== HEADER ===== */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 18px;
+            margin-bottom: 24px;
+            gap: 16px;
+        }
+
+        .slide-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .slide-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: -0.3px;
+        }
+
+        .slide-header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge {
+            background: #f1f5f9;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 13px;
+            color: #475569;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ===== NÚT "?" TRÒN GÓC PHẢI TRÊN ===== */
+        .btn-help-trigger {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #eff6ff;
+            border: 2px solid #bfdbfe;
+            color: #1d4ed8;
+            font-size: 20px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.12);
+            position: relative;
+        }
+
+        .btn-help-trigger:hover {
+            background: #1d4ed8;
+            color: #ffffff;
+            border-color: #1d4ed8;
+            transform: scale(1.1);
+            box-shadow: 0 6px 18px rgba(29, 78, 216, 0.28);
+        }
+
+        .btn-help-trigger:active {
+            transform: scale(0.95);
+        }
+
+        /* Tooltip hover cho nút ? */
+        .btn-help-trigger::after {
+            content: "Xem chú thích & giải thích khái niệm";
+            position: absolute;
+            bottom: -38px;
+            right: 0;
+            background: #0f172a;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 5px 12px;
+            border-radius: 8px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            transform: translateY(-4px);
+            z-index: 20;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-help-trigger:hover::after {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== SLIDE BODY ===== */
+        .slide-body {
+            line-height: 1.95;
+            font-size: 17px;
+            color: #334155;
+            flex-grow: 1;
+        }
+
+        .slide-body p {
+            margin-bottom: 22px;
+        }
+
+        /* Từ khóa tương tác trên slide */
+        .concept-keyword {
+            background: #e0f2fe;
+            color: #0369a1;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid #bae6fd;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s ease;
+        }
+
+        .concept-keyword:hover {
+            background: #0284c7;
+            color: #ffffff;
+            border-color: #0284c7;
+            box-shadow: 0 3px 10px rgba(2, 132, 199, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .concept-keyword .icon-mini {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* ===== SLIDE FOOTER ===== */
+        .slide-footer {
+            margin-top: 24px;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-feedback-trigger {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 9px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-feedback-trigger:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+            border-color: #cbd5e1;
+        }
+
+        .slide-tip {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        /* ============================================================ */
+        /* ===== POPUP / MODAL OVERLAY CHUNG ===== */
+        /* ============================================================ */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+            padding: 20px;
+        }
+
+        .modal-backdrop.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: 20px;
+            max-width: 680px;
+            width: 100%;
+            padding: 28px 32px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+            position: relative;
+            transform: scale(0.94) translateY(12px);
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-backdrop.active .modal-card {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #f1f5f9;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 16px;
+            color: #64748b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+
+        .modal-close-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+            transform: scale(1.08);
+        }
+
+        /* ===== POPUP GIẢI THÍCH KHÁI NIỆM ===== */
+        .modal-header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .modal-header-sub {
+            font-size: 13.5px;
+            color: #64748b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-approved {
+            background: #ecfdf5;
+            color: #059669;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+            border: 1px solid #a7f3d0;
+        }
+
+        /* Tabs chuyển đổi giữa các khái niệm */
+        .concept-tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1.5px solid #e2e8f0;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tab-btn:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .tab-btn.active {
+            background: #0284c7;
+            color: #ffffff;
+            border-color: #0284c7;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+        }
+
+        /* Chi tiết nội dung trong popup */
+        .concept-content-box {
+            animation: fadeInTab 0.2s ease;
+        }
+
+        @keyframes fadeInTab {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .concept-item-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 14px;
+        }
+
+        .detail-section {
+            margin-bottom: 16px;
+        }
+
+        .section-label {
+            font-size: 13.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #475569;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-body {
+            font-size: 15.5px;
+            line-height: 1.65;
+            color: #1e293b;
+        }
+
+        .example-card {
+            background: #f0f9ff;
+            border-left: 4px solid #0284c7;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #0c4a6e;
+        }
+
+        .source-card {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            color: #334155;
+        }
+
+        .source-card strong {
+            color: #0f172a;
+        }
+
+        .modal-footer {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-modal-action {
+            padding: 9px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-modal-secondary {
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+        .btn-modal-secondary:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        /* ===== POPUP ĐÁNH GIÁ & PHẢN HỒI ===== */
+        .star-row {
+            display: flex;
+            gap: 10px;
+            margin: 14px 0 18px;
+        }
+
+        .star-item {
+            cursor: pointer;
+            transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+            user-select: none;
+        }
+
+        .star-item:hover {
+            transform: scale(1.22);
+        }
+
+        .star-icon {
+            width: 40px;
+            height: 40px;
+            fill: #ffffff;
+            stroke: #94a3b8;
+            stroke-width: 1.5;
+            stroke-linejoin: round;
+            transition: fill 0.15s ease, stroke 0.15s ease, filter 0.15s ease;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.06));
+        }
+
+        .star-item.active .star-icon,
+        .star-item.hovered .star-icon {
+            fill: #f59e0b;
+            stroke: #d97706;
+            filter: drop-shadow(0 3px 10px rgba(245, 158, 11, 0.45));
+        }
+
+        .feedback-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 14.5px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            margin-top: 6px;
+            color: #0f172a;
+        }
+
+        .feedback-textarea:focus {
+            border-color: #0284c7;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+
+        .btn-modal-primary {
+            background: #0284c7;
+            color: #ffffff;
+        }
+
+        .btn-modal-primary:hover {
+            background: #0369a1;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+        }
+
+        /* ===== TOAST NOTIFICATION ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #0f172a;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 14.5px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.25s, transform 0.25s;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 650px) {
+            .slide-container {
+                padding: 24px 20px;
+            }
+
+            .slide-header h2 {
+                font-size: 18px;
+            }
+
+            .modal-card {
+                padding: 22px 20px;
+            }
+
+            .concept-tabs {
+                flex-wrap: nowrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== SLIDE CONTAINER (MÀN HÌNH CHÍNH) ===== -->
+    <div class="slide-container" id="slideApp">
+
+        <!-- ===== SLIDE HEADER ===== -->
+        <div class="slide-header">
+            <div class="slide-header-left">
+                <h2>📚 Chương 3: Trí tuệ nhân tạo trong giáo dục</h2>
+            </div>
+            <div class="slide-header-right">
+                <span class="badge">Buổi 4 · 45 phút</span>
+                <!-- Nút ? tròn góc phải trên (Bỏ chữ) -->
+                <button class="btn-help-trigger" id="btnHelpTrigger" title="Xem chú thích & giải thích khái niệm">
+                    ?
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== SLIDE NỘI DUNG BÀI GIẢNG ===== -->
+        <div class="slide-body">
+            <p>
+                Học máy (Machine Learning) là một nhánh của Trí tuệ nhân tạo cho phép máy tính học từ dữ liệu mà không
+                cần
+                lập trình rõ ràng từng bước.
+            </p>
+            <p>
+                Mô hình ngôn ngữ lớn (LLM) như GPT là một loại mô hình học sâu có khả năng sinh văn bản tự nhiên dựa
+                trên ngữ cảnh đầu vào, được huấn luyện trên hàng tỷ tham số.
+            </p>
+            <p>
+                Học tăng cường (Reinforcement Learning) là phương pháp học máy trong đó tác nhân (agent) học cách hành
+                động trong một môi trường
+                để tối đa hóa phần thưởng tích lũy.
+            </p>
+        </div>
+
+        <!-- ===== SLIDE FOOTER ===== -->
+        <div class="slide-footer">
+            <span class="slide-tip">💡 Gợi ý: Nhấn vào nút <strong>?</strong> góc phải hoặc các từ khóa để xem chú
+                thích</span>
+        </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== POPUP MODAL 1: GIẢI THÍCH KHÁI NIỆM (MODAL POPUP) ===== -->
+    <!-- ============================================================ -->
+    <div class="modal-backdrop" id="conceptModalBackdrop">
+        <div class="modal-card">
+            <!-- Nút đóng ✕ -->
+            <button class="modal-close-btn" id="btnCloseConceptModal" title="Đóng (ESC)">✕</button>
+
+            <!-- Tiêu đề popup -->
+            <div class="modal-header-title">
+                <span>💡 Chú thích & Giải thích khái niệm</span>
+            </div>
+            <div class="modal-header-sub">
+                <span class="badge-approved">✓ Đã được giảng viên phê duyệt</span>
+                <span>· Trích xuất theo ngữ cảnh slide</span>
+            </div>
+
+            <!-- Tabs chọn các khái niệm -->
+            <div class="concept-tabs" id="conceptTabs">
+                <button class="tab-btn active" data-concept="ml">🧠 Machine Learning</button>
+                <button class="tab-btn" data-concept="llm">🤖 Mô hình LLM</button>
+                <button class="tab-btn" data-concept="rl">🎮 Học tăng cường (RL)</button>
+            </div>
+
+            <!-- Khung nội dung chi tiết -->
+            <div class="concept-content-box" id="conceptContentBox">
+                <div class="concept-item-title" id="popupConceptTitle">🧠 Machine Learning</div>
+
+                <div class="detail-section">
+                    <div class="section-label">📖 Định nghĩa ngắn gọn</div>
+                    <div class="section-body" id="popupConceptDef">
+                        Machine Learning là một nhánh của Trí tuệ nhân tạo cho phép hệ thống tự học và cải thiện từ dữ
+                        liệu mà không cần lập trình rõ ràng từng bước.
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="section-label">💡 Ví dụ trực quan</div>
+                    <div class="example-card" id="popupConceptExample">
+                        Hệ thống gợi ý sản phẩm trên Amazon học từ lịch sử mua hàng của bạn để đề xuất các sản phẩm phù
+                        hợp tiếp theo.
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="section-label">📚 Nguồn trích xuất</div>
+                    <div class="source-card" id="popupConceptSource">
+                        <strong>📖 Giáo trình AI cơ bản, Chương 2, trang 15</strong><br />
+                        <span style="font-size:12.5px; color:#64748b;">Tác giả: Nguyễn Văn A, Trần Thị B · NXB Đại học
+                            Công nghệ, 2024</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer: Có nút Phản hồi góc dưới bên trái và nút Đóng bên phải -->
+            <div class="modal-footer">
+                <button class="btn-feedback-trigger" id="btnConceptFeedback">
+                    📝 Phản hồi về tính năng
+                </button>
+                <button class="btn-modal-action btn-modal-secondary" id="btnDismissConcept">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== POPUP MODAL 2: ĐÁNH GIÁ & PHẢN HỒI (FEEDBACK POPUP) ===== -->
+    <!-- ============================================================ -->
+    <div class="modal-backdrop" id="feedbackModalBackdrop">
+        <div class="modal-card" style="max-width: 540px;">
+            <!-- Nút đóng ✕ -->
+            <button class="modal-close-btn" id="btnCloseFeedbackModal" title="Đóng (ESC)">✕</button>
+
+            <!-- Tiêu đề feedback popup -->
+            <div class="modal-header-title">
+                <span>📝 Đánh giá & Phản hồi</span>
+            </div>
+            <div class="modal-header-sub">
+                Giúp chúng tôi hoàn thiện tính năng giải thích khái niệm tốt hơn.
+            </div>
+
+            <div style="font-weight:600; font-size:15px; margin-top:10px; color:#1e293b;">
+                Bạn đánh giá thế nào về tính năng này?
+            </div>
+
+            <!-- Hàng sao đánh giá SVG -->
+            <div class="star-row" id="starRow">
+                <div class="star-item" data-star="1" title="1 sao - Kém">
+                    <svg class="star-icon" viewBox="0 0 24 24">
+                        <path
+                            d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                    </svg>
+                </div>
+                <div class="star-item" data-star="2" title="2 sao - Bình thường">
+                    <svg class="star-icon" viewBox="0 0 24 24">
+                        <path
+                            d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                    </svg>
+                </div>
+                <div class="star-item" data-star="3" title="3 sao - Ổn">
+                    <svg class="star-icon" viewBox="0 0 24 24">
+                        <path
+                            d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                    </svg>
+                </div>
+                <div class="star-item" data-star="4" title="4 sao - Tốt">
+                    <svg class="star-icon" viewBox="0 0 24 24">
+                        <path
+                            d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                    </svg>
+                </div>
+                <div class="star-item" data-star="5" title="5 sao - Rất hữu ích">
+                    <svg class="star-icon" viewBox="0 0 24 24">
+                        <path
+                            d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Ô góp ý -->
+            <label style="font-weight:600; font-size:14.5px; display:block; margin-top:8px; color:#1e293b;">
+                💬 Góp ý thêm (không bắt buộc)
+            </label>
+            <textarea class="feedback-textarea" id="feedbackText"
+                placeholder="Hãy cho chúng tôi biết cảm nhận hoặc đề xuất của bạn..."></textarea>
+
+            <!-- Nút hành động -->
+            <div class="modal-footer" style="margin-top:20px;">
+                <button class="btn-modal-action btn-modal-secondary" id="btnCancelFeedback">Bỏ qua</button>
+                <button class="btn-modal-action btn-modal-primary" id="btnSubmitFeedback">Gửi phản hồi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST THÔNG BÁO ===== -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================================ -->
+    <!-- ===== JAVASCRIPT ===== -->
+    <!-- ============================================================ -->
+    <script>
+        (function () {
+            'use strict';
+
+            // ---------- DỮ LIỆU CÁC KHÁI NIỆM ----------
+            const conceptData = {
+                ml: {
+                    title: '🧠 Machine Learning (Học máy)',
+                    def: 'Machine Learning là một nhánh của Trí tuệ nhân tạo cho phép hệ thống tự học và cải thiện từ dữ liệu mà không cần lập trình rõ ràng từng bước.',
+                    example: 'Hệ thống gợi ý sản phẩm trên Amazon học từ lịch sử mua hàng của bạn để đề xuất các mặt hàng phù hợp tiếp theo.',
+                    source: '📖 Giáo trình AI cơ bản, Chương 2, trang 15',
+                    sourceDetail: 'Tác giả: Nguyễn Văn A, Trần Thị B · NXB Đại học Công nghệ, 2024'
+                },
+                llm: {
+                    title: '🤖 Mô hình ngôn ngữ lớn (LLM)',
+                    def: 'LLM là một loại mô hình học sâu có khả năng hiểu và sinh văn bản tự nhiên dựa trên ngữ cảnh đầu vào, được huấn luyện trên hàng tỷ tham số với khối lượng dữ liệu khổng lồ.',
+                    example: 'ChatGPT (GPT-4) có thể trả lời câu hỏi phức tạp, tóm tắt bài giảng, giải bài tập và viết mã lập trình chỉ từ một câu nhắc (prompt).',
+                    source: '📖 Deep Learning Foundations, Chương 12',
+                    sourceDetail: 'Tác giả: Ian Goodfellow, Yoshua Bengio, Aaron Courville · NXB MIT Press, 2016'
+                },
+                rl: {
+                    title: '🎮 Học tăng cường (Reinforcement Learning)',
+                    def: 'Học tăng cường là phương pháp học máy trong đó một tác nhân (agent) tự học cách đưa ra chuỗi quyết định trong môi trường để tối đa hóa điểm thưởng tích lũy thông qua thử và sai.',
+                    example: 'AlphaGo sử dụng học tăng cường để tự đấu hàng triệu ván cờ với chính mình và đánh bại nhà vô địch cờ vây thế giới.',
+                    source: '📖 Reinforcement Learning: An Introduction',
+                    sourceDetail: 'Tác giả: Richard S. Sutton, Andrew G. Barto · NXB MIT Press, 2018'
+                }
+            };
+
+            // ---------- DOM REFS ----------
+            const btnHelpTrigger = document.getElementById('btnHelpTrigger');
+            const conceptKeywords = document.querySelectorAll('.concept-keyword');
+            const conceptModalBackdrop = document.getElementById('conceptModalBackdrop');
+            const btnCloseConceptModal = document.getElementById('btnCloseConceptModal');
+            const btnDismissConcept = document.getElementById('btnDismissConcept');
+            const btnConceptFeedback = document.getElementById('btnConceptFeedback');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            const popupConceptTitle = document.getElementById('popupConceptTitle');
+            const popupConceptDef = document.getElementById('popupConceptDef');
+            const popupConceptExample = document.getElementById('popupConceptExample');
+            const popupConceptSource = document.getElementById('popupConceptSource');
+
+            // Feedback modal
+            const feedbackModalBackdrop = document.getElementById('feedbackModalBackdrop');
+            const btnCloseFeedbackModal = document.getElementById('btnCloseFeedbackModal');
+            const btnCancelFeedback = document.getElementById('btnCancelFeedback');
+            const btnSubmitFeedback = document.getElementById('btnSubmitFeedback');
+            const starRow = document.getElementById('starRow');
+            const starItems = starRow.querySelectorAll('.star-item');
+            const feedbackText = document.getElementById('feedbackText');
+
+            const toast = document.getElementById('toast');
+
+            // ---------- STATE ----------
+            let currentActiveConcept = 'ml';
+            let selectedStar = 0;
+            let toastTimer = null;
+
+            // ---------- QUẢN LÝ POPUP KHÁI NIỆM ----------
+            function renderConcept(key) {
+                if (!conceptData[key]) return;
+                currentActiveConcept = key;
+                const data = conceptData[key];
+
+                popupConceptTitle.textContent = data.title;
+                popupConceptDef.textContent = data.def;
+                popupConceptExample.textContent = data.example;
+                popupConceptSource.innerHTML = `
+                    <strong>${data.source}</strong><br />
+                    <span style="font-size:12.5px; color:#64748b;">${data.sourceDetail}</span>
+                `;
+
+                // Cập nhật tab active
+                tabButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.concept === key);
+                });
+            }
+
+            function openConceptModal(conceptKey = 'ml') {
+                renderConcept(conceptKey);
+                conceptModalBackdrop.classList.add('active');
+            }
+
+            function closeConceptModal() {
+                conceptModalBackdrop.classList.remove('active');
+            }
+
+            // Bấm nút ? ở góc phải trên -> Mở popup
+            btnHelpTrigger.addEventListener('click', () => {
+                openConceptModal('ml');
+            });
+
+            // Bấm trực tiếp vào từ khóa trên slide -> Mở thẳng popup của từ đó
+            conceptKeywords.forEach(kw => {
+                kw.addEventListener('click', function () {
+                    const key = this.dataset.concept;
+                    openConceptModal(key);
+                });
+            });
+
+            // Chuyển tab trong popup
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const key = this.dataset.concept;
+                    renderConcept(key);
+                });
+            });
+
+            // Đóng popup khái niệm
+            btnCloseConceptModal.addEventListener('click', closeConceptModal);
+            btnDismissConcept.addEventListener('click', closeConceptModal);
+
+            // Bấm nút "Phản hồi về tính năng" từ trong popup khái niệm -> Mở popup phản hồi
+            btnConceptFeedback.addEventListener('click', function () {
+                closeConceptModal();
+                openFeedbackModal();
+            });
+
+            // Bấm ra ngoài backdrop để đóng popup
+            conceptModalBackdrop.addEventListener('click', function (e) {
+                if (e.target === conceptModalBackdrop) {
+                    closeConceptModal();
+                }
+            });
+
+            // ---------- QUẢN LÝ POPUP PHẢN HỒI ----------
+            function openFeedbackModal() {
+                feedbackModalBackdrop.classList.add('active');
+            }
+
+            function closeFeedbackModal() {
+                feedbackModalBackdrop.classList.remove('active');
+            }
+
+            btnCloseFeedbackModal.addEventListener('click', closeFeedbackModal);
+            btnCancelFeedback.addEventListener('click', closeFeedbackModal);
+
+            feedbackModalBackdrop.addEventListener('click', function (e) {
+                if (e.target === feedbackModalBackdrop) {
+                    closeFeedbackModal();
+                }
+            });
+
+            // ---------- ĐÁNH GIÁ SAO (SVG Rating) ----------
+            function updateStarDisplay(val) {
+                starItems.forEach(item => {
+                    const star = parseInt(item.dataset.star);
+                    item.classList.toggle('active', star <= val);
+                });
+            }
+
+            function previewStars(val) {
+                starItems.forEach(item => {
+                    const star = parseInt(item.dataset.star);
+                    item.classList.toggle('hovered', star <= val);
+                });
+            }
+
+            starItems.forEach(el => {
+                // Click ấn định số sao
+                el.addEventListener('click', function () {
+                    const starVal = parseInt(this.dataset.star);
+                    selectedStar = starVal;
+                    starItems.forEach(item => item.classList.remove('hovered'));
+                    updateStarDisplay(selectedStar);
+                });
+
+                // Hover xem trước màu vàng
+                el.addEventListener('mouseenter', function () {
+                    const starVal = parseInt(this.dataset.star);
+                    previewStars(starVal);
+                });
+            });
+
+            // Rời chuột khỏi hàng sao -> trở về số sao đã ấn định
+            starRow.addEventListener('mouseleave', function () {
+                starItems.forEach(item => item.classList.remove('hovered'));
+                updateStarDisplay(selectedStar);
+            });
+
+            // Submit feedback
+            btnSubmitFeedback.addEventListener('click', function () {
+                const comment = feedbackText.value.trim();
+                if (selectedStar === 0 && !comment) {
+                    showToast('⚠️ Vui lòng chọn số sao hoặc viết góp ý');
+                    return;
+                }
+                console.log(`[Feedback] Đánh giá: ${selectedStar} sao, Góp ý: "${comment || '(trống)'}"`);
+                showToast('✅ Cảm ơn bạn đã đóng góp phản hồi!');
+                // Reset form
+                selectedStar = 0;
+                updateStarDisplay(0);
+                starItems.forEach(item => item.classList.remove('active', 'hovered'));
+                feedbackText.value = '';
+                closeFeedbackModal();
+            });
+
+            // ---------- TOAST THÔNG BÁO ----------
+            function showToast(msg) {
+                if (toastTimer) {
+                    clearTimeout(toastTimer);
+                    toast.classList.remove('show');
+                }
+                toast.textContent = msg;
+                toast.classList.add('show');
+                toastTimer = setTimeout(() => {
+                    toast.classList.remove('show');
+                    toastTimer = null;
+                }, 2500);
+            }
+
+            // ---------- PHÍM TẮT BÀN PHÍM ----------
+            document.addEventListener('keydown', function (e) {
+                const isTyping = ['INPUT', 'TEXTAREA'].includes(e.target.tagName) || e.target.isContentEditable;
+
+                if (e.key === 'Escape') {
+                    if (isTyping) {
+                        e.target.blur();
+                        return;
+                    }
+                    if (conceptModalBackdrop.classList.contains('active')) {
+                        closeConceptModal();
+                    } else if (feedbackModalBackdrop.classList.contains('active')) {
+                        closeFeedbackModal();
+                    }
+                }
+            });
+
+            console.log('✅ Prototype (Popup Model) đã sẵn sàng!');
+            console.log('📌 Nút "?" góc phải trên sẽ mở popup giải thích khái niệm.');
+            console.log('📌 Nhấp vào bất kỳ từ khóa nào trên slide cũng sẽ mở popup khái niệm tương ứng.');
+        })();
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Option A — AI Diagnostic Refresher</title>
+  <link rel="stylesheet" href="yen-style.css">
+</head>
+<body data-option="a">
+  <div class="slide-container">
+    <header class="slide-header">
+      <div class="slide-header-left">
+        <h2>📚 Chương 3: Trí tuệ nhân tạo trong giáo dục</h2>
+      </div>
+      <div class="slide-header-right">
+        <span class="badge">Buổi 4 · 45 phút</span>
+        <button class="btn-help-trigger" data-action="a-start" title="Yêu cầu AI hỗ trợ">?</button>
+      </div>
+    </header>
+
+    <main class="slide-body">
+      <p>Học máy (Machine Learning) là một nhánh của Trí tuệ nhân tạo cho phép máy tính học từ dữ liệu mà không cần lập trình rõ ràng từng bước.</p>
+      <p>Mô hình ngôn ngữ lớn (LLM) và Học tăng cường (Reinforcement Learning) là hai khái niệm liên quan. Bạn chưa chắc <span class="concept-keyword">Machine Learning</span> có nghĩa gì và muốn tiếp tục theo kịp bài.</p>
+      <div class="option-strip">
+        <strong>Option A · AI Diagnostic Refresher</strong>
+        <span>AI chỉ hỗ trợ sau khi bạn chủ động yêu cầu. Bạn luôn có thể bỏ qua hoặc quay lại slide.</span>
+      </div>
+      <div class="notice-card">
+        <strong>Task</strong><br>
+        Dùng phương án này để xử lý phần chưa hiểu và tiếp tục theo dõi bài học.
+      </div>
+    </main>
+
+    <footer class="slide-footer">
+      <span class="slide-tip">💡 AI sẽ hỏi ngắn, đưa gợi ý và hiển thị evidence đang sử dụng.</span>
+      <button class="pill-button" data-action="a-start">Tôi vẫn chưa hiểu</button>
+    </footer>
+  </div>
+
+  <div class="modal-backdrop" id="aDiagnosticModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" data-action="a-close" title="Đóng">✕</button>
+      <div class="modal-header-title">💡 AI Diagnostic Refresher</div>
+      <div class="modal-header-sub"><span class="badge-approved">✓ User chủ động yêu cầu</span> · AI hỏi tối đa 2 câu ngắn</div>
+      <div class="detail-section">
+        <div class="section-label">Bạn đang vướng ở đâu?</div>
+        <div class="choice-list">
+          <div class="choice"><input type="radio" name="a-diagnosis" checked><label>Chưa hiểu thuật ngữ chính.</label></div>
+          <div class="choice"><input type="radio" name="a-diagnosis"><label>Chưa hiểu mối liên hệ với phần trước.</label></div>
+          <div class="choice"><input type="radio" name="a-diagnosis"><label>Muốn xem một ví dụ cụ thể.</label></div>
+        </div>
+      </div>
+      <div class="source-card">AI đang dùng: slide hiện tại và lựa chọn của bạn. Prototype không dùng learning history.</div>
+      <div class="modal-footer">
+        <button class="pill-button pill-secondary" data-action="a-close">Dừng và quay lại</button>
+        <button class="pill-button" data-action="a-diagnose">Xem gợi ý ôn tập</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="aResultModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" data-action="a-return" title="Đóng">✕</button>
+      <div class="modal-header-title">🧠 Gợi ý ôn tập</div>
+      <div class="modal-header-sub"><span class="badge-approved">✓ Gợi ý, không phải kết luận chắc chắn</span></div>
+      <div class="detail-section">
+        <div class="section-label">Có thể bạn cần xem lại</div>
+        <div class="section-body">Machine Learning là cách để hệ thống học từ dữ liệu và cải thiện mà không cần được lập trình rõ ràng từng bước. Hãy xem đây là gợi ý ngắn dựa trên slide hiện tại.</div>
+      </div>
+      <div class="example-card">Ví dụ: một hệ thống gợi ý có thể học từ lịch sử tương tác để đưa ra đề xuất phù hợp hơn ở lần sau.</div>
+      <div class="detail-section">
+        <div class="section-label">Evidence được dùng</div>
+        <div class="source-card">Slide hiện tại và lựa chọn “chưa hiểu thuật ngữ chính” của bạn.</div>
+      </div>
+      <div class="modal-footer">
+        <button class="pill-button pill-secondary" data-action="a-save">Đánh dấu xem sau</button>
+        <button class="pill-button" data-action="a-return">Quay lại bài</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="prototype.js"></script>
+</body>
+</html>

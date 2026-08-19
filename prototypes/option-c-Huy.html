@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Option C — Anonymous Human Escalation</title>
+  <link rel="stylesheet" href="yen-style.css">
+</head>
+<body data-option="c">
+  <div class="slide-container">
+    <header class="slide-header">
+      <div class="slide-header-left">
+        <h2>📚 Chương 3: Trí tuệ nhân tạo trong giáo dục</h2>
+      </div>
+      <div class="slide-header-right">
+        <span class="badge">Buổi 4 · 45 phút</span>
+        <button class="btn-help-trigger" data-action="c-open" title="Hỏi người hỗ trợ">?</button>
+      </div>
+    </header>
+
+    <main class="slide-body">
+      <p>Học máy (Machine Learning) là một nhánh của Trí tuệ nhân tạo cho phép máy tính học từ dữ liệu mà không cần lập trình rõ ràng từng bước.</p>
+      <p>Mô hình ngôn ngữ lớn (LLM) và Học tăng cường (Reinforcement Learning) là hai khái niệm liên quan. Bạn chưa chắc <span class="concept-keyword">Machine Learning</span> có nghĩa gì và không muốn hỏi công khai trong lúc lớp đang diễn ra.</p>
+      <div class="option-strip">
+        <strong>Option C · Anonymous Human Escalation</strong>
+        <span>AI chỉ chuẩn bị context. Bạn duyệt nội dung trước khi gửi; người hỗ trợ giữ quyền trả lời.</span>
+      </div>
+      <div class="notice-card">
+        <strong>Task</strong><br>
+        Dùng phương án này để xử lý phần chưa hiểu và tiếp tục theo dõi bài học.
+      </div>
+    </main>
+
+    <footer class="slide-footer">
+      <span class="slide-tip">💡 Bạn có thể gửi câu hỏi ẩn danh và giữ lại mốc slide để xem phản hồi sau.</span>
+      <button class="pill-button" data-action="c-open">Hỏi người hỗ trợ ẩn danh</button>
+    </footer>
+  </div>
+
+  <div class="modal-backdrop" id="cPreviewModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" data-action="c-cancel" title="Đóng">✕</button>
+      <div class="modal-header-title">📝 Preview câu hỏi</div>
+      <div class="modal-header-sub"><span class="badge-approved">✓ User duyệt trước khi gửi</span> · AI chỉ chuẩn bị context</div>
+      <div class="detail-section">
+        <div class="section-label">Câu hỏi gửi tới người hỗ trợ</div>
+      <textarea id="c-question">Mình chưa hiểu Machine Learning trong Slide 12. Khái niệm này liên quan thế nào đến LLM và Học tăng cường?</textarea>
+      </div>
+      <div class="source-card">Context sẽ gửi: Slide 12, thuật ngữ được chọn và câu hỏi trên.</div>
+      <label class="privacy"><input id="c-anonymous" type="checkbox" checked> Gửi ẩn danh cho LabCoach/giảng viên.</label>
+      <div class="modal-footer">
+        <button class="pill-button pill-secondary" data-action="c-cancel">Hủy và quay lại</button>
+        <button class="pill-button" data-action="c-send">Gửi câu hỏi</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="cSentModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" data-action="c-return" title="Đóng">✕</button>
+      <div class="modal-header-title">✅ Đã gửi câu hỏi ẩn danh</div>
+      <div class="modal-header-sub"><span class="badge-approved">✓ Trạng thái: đang chờ phản hồi</span></div>
+      <div class="detail-section">
+        <div class="section-label">Bạn có thể tiếp tục bài học</div>
+        <div class="section-body">Câu hỏi đã được lưu cùng Slide 12. Khi có phản hồi, bạn có thể quay lại context này.</div>
+      </div>
+      <div class="example-card">AI đã tóm tắt context và chuẩn bị wording. AI không tự trả lời thay người hỗ trợ.</div>
+      <div class="modal-footer">
+        <button class="pill-button" data-action="c-return">Quay lại bài</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="prototype.js"></script>
+</body>
+</html>
