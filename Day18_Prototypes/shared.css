@@ -70,11 +70,12 @@ h2 { margin: 8px 0 10px; }
 .option-card { display: block; min-height: 235px; padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--white); text-decoration: none; transition: transform .18s ease, box-shadow .18s ease; }
 .option-card:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(31, 50, 80, .12); }
 .option-card p { color: var(--muted); }
-.option-a { border-top: 5px solid var(--blue); }
+.option-a { border-top: 5px solid var(--green); }
 .option-b { border-top: 5px solid var(--green); }
-.option-c { border-top: 5px solid var(--purple); }
+.option-c { border-top: 5px solid var(--green); }
+.option-a .option-label { color: var(--green); }
 .option-b .option-label { color: var(--green); }
-.option-c .option-label { color: var(--purple); }
+.option-c .option-label { color: var(--green); }
 .card-link { display: inline-block; margin-top: 12px; color: var(--blue); font-weight: 750; }
 
 .annotation { margin-top: 24px; padding: 18px 20px; color: var(--muted); font-size: .9rem; }
