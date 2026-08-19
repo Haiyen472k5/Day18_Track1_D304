@@ -4,82 +4,422 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Option A — AI Diagnostic Refresher</title>
-  <link rel="stylesheet" href="yen-style.css">
+  <link rel="stylesheet" href="../Day18_Prototypes/shared.css">
+  <style>
+    .step-meta { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: .88rem; }
+    .step-track { height: 7px; margin: 10px 0 24px; overflow: hidden; border-radius: 99px; background: var(--line); }
+    .step-fill { height: 100%; width: 33.333%; border-radius: inherit; background: var(--blue); transition: width .2s ease; }
+    .capability-list { padding-left: 20px; color: #394864; }
+    .capability-list li + li { margin-top: 7px; }
+    .choice { position: relative; }
+    .choice:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(53,106,230,.14); }
+    .choice input { flex: 0 0 auto; }
+    .choice label { flex: 1; }
+    .uncertainty { margin: 16px 0; padding: 14px 16px; border-left: 4px solid var(--amber); background: var(--amber-soft); color: #714900; }
+    .refresher { display: grid; gap: 16px; }
+    .example-box, .quick-check { padding: 17px; border: 1px solid var(--line); border-radius: 12px; background: var(--white); }
+    .example-box p, .quick-check p { margin-bottom: 0; }
+    .quick-feedback { margin-top: 13px; padding: 12px 14px; border-radius: 10px; }
+    .quick-feedback.correct { background: var(--green-soft); color: #12633f; }
+    .quick-feedback.incorrect { background: var(--amber-soft); color: #714900; }
+    .recovery-box { margin-top: 18px; padding: 16px; border: 1px dashed #9caec8; border-radius: 12px; background: #fbfcff; }
+    .recovery-box h3 { margin: 0 0 7px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .btn:focus-visible, .back-link:focus-visible, input:focus-visible { outline: 3px solid rgba(53,106,230,.35); outline-offset: 3px; }
+    @media (max-width: 560px) { .step-meta { flex-direction: column; gap: 2px; } .actions .btn { width: 100%; } }
+
+    /* Option A visual layer — scoped so Option B/C stay untouched. */
+    :root {
+      --a-navy: #0b1736;
+      --a-blue: #315ee8;
+      --a-cyan: #22b8cf;
+      --a-surface: rgba(255,255,255,.92);
+    }
+    body[data-option="a"] {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 8% 6%, rgba(34,184,207,.16), transparent 28rem),
+        radial-gradient(circle at 92% 18%, rgba(49,94,232,.18), transparent 32rem),
+        linear-gradient(180deg, #f6f9ff 0%, #eef3fb 100%);
+    }
+    body[data-option="a"]::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      opacity: .28;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(49,94,232,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(49,94,232,.06) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: linear-gradient(to bottom, #000, transparent 75%);
+    }
+    body[data-option="a"] .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom-color: rgba(205,216,235,.75);
+      background: rgba(250,252,255,.82);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 1px 0 rgba(255,255,255,.8);
+    }
+    body[data-option="a"] .brand { color: var(--a-navy); }
+    body[data-option="a"] .topbar-note {
+      padding: 6px 11px;
+      border: 1px solid #cbd8ff;
+      border-radius: 999px;
+      background: #eef3ff;
+      color: #2449b8;
+      font-weight: 800;
+    }
+    body[data-option="a"] .container { width: min(820px, calc(100% - 36px)); padding-top: 36px; }
+    body[data-option="a"] .back-link {
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      transition: background .18s ease, transform .18s ease;
+    }
+    body[data-option="a"] .back-link:hover { background: #fff; transform: translateX(-2px); }
+    body[data-option="a"] .prototype-title {
+      position: relative;
+      margin: 22px 0 30px;
+      padding: 10px 4px 4px;
+    }
+    body[data-option="a"] .prototype-title::after {
+      content: "AI";
+      position: absolute;
+      right: 4px;
+      top: -18px;
+      display: grid;
+      place-items: center;
+      width: 72px;
+      height: 72px;
+      border: 1px solid rgba(255,255,255,.8);
+      border-radius: 24px;
+      color: rgba(255,255,255,.94);
+      background: linear-gradient(135deg, var(--a-blue), var(--a-cyan));
+      box-shadow: 0 18px 42px rgba(49,94,232,.25);
+      font-size: 1.15rem;
+      font-weight: 900;
+      transform: rotate(5deg);
+    }
+    body[data-option="a"] .prototype-title h1 {
+      max-width: 650px;
+      margin-top: 10px;
+      color: var(--a-navy);
+      font-size: clamp(2.25rem, 6vw, 3.65rem);
+      letter-spacing: -.052em;
+    }
+    body[data-option="a"] .prototype-title .lead { max-width: 650px; font-size: 1.12rem; }
+    body[data-option="a"] .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      padding: 7px 11px;
+      border-radius: 999px;
+      color: #2449b8;
+      background: #e9efff;
+      letter-spacing: .09em;
+    }
+    body[data-option="a"] .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--a-cyan); box-shadow: 0 0 0 4px rgba(34,184,207,.14); }
+    body[data-option="a"] .panel {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(22px, 4vw, 34px);
+      border-color: rgba(197,209,231,.82);
+      border-radius: 24px;
+      background: var(--a-surface);
+      box-shadow: 0 24px 70px rgba(30,51,91,.11), inset 0 1px 0 rgba(255,255,255,.9);
+      backdrop-filter: blur(12px);
+      animation: panel-in .28s ease both;
+    }
+    body[data-option="a"] .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 3px;
+      background: linear-gradient(90deg, var(--a-blue), var(--a-cyan));
+    }
+    body[data-option="a"] .slide-content {
+      border-color: #dce5f5;
+      border-radius: 18px;
+      background: linear-gradient(145deg, #fbfdff, #f3f7ff);
+      box-shadow: inset 0 1px 0 #fff;
+    }
+    body[data-option="a"] .slide-number { display: inline-flex; padding: 5px 9px; border-radius: 8px; background: #f0f4fa; color: #52627e; font-weight: 700; }
+    body[data-option="a"] .notice { border: 1px solid #f2dca5; }
+    body[data-option="a"] .option-banner { border: 1px solid #cfdbff; background: linear-gradient(135deg, #edf3ff, #f3fbff); font-weight: 750; }
+    body[data-option="a"] .option-banner.green { border-color: #bce4d0; background: linear-gradient(135deg, #e9f9f1, #effcf8); }
+    body[data-option="a"] .step-track { height: 9px; background: #e6ebf4; box-shadow: inset 0 1px 2px rgba(14,33,70,.09); }
+    body[data-option="a"] .step-fill { background: linear-gradient(90deg, var(--a-blue), var(--a-cyan)); box-shadow: 0 0 14px rgba(34,184,207,.34); }
+    body[data-option="a"] .choice {
+      padding: 14px 15px;
+      border-color: #d7e0ef;
+      border-radius: 14px;
+      background: rgba(255,255,255,.88);
+      transition: border-color .17s ease, transform .17s ease, box-shadow .17s ease;
+    }
+    body[data-option="a"] .choice:hover { transform: translateY(-1px); border-color: #9eb4f4; box-shadow: 0 8px 18px rgba(43,72,129,.08); }
+    body[data-option="a"] .choice:has(input:checked) { border-color: var(--a-blue); background: #f0f4ff; box-shadow: 0 0 0 3px rgba(49,94,232,.1); }
+    body[data-option="a"] input[type="radio"] { width: 18px; height: 18px; accent-color: var(--a-blue); }
+    body[data-option="a"] .btn {
+      min-height: 44px;
+      border-color: #cfd9e9;
+      border-radius: 12px;
+      box-shadow: 0 5px 12px rgba(28,48,86,.05);
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    }
+    body[data-option="a"] .btn:hover { transform: translateY(-1px); box-shadow: 0 9px 20px rgba(28,48,86,.11); }
+    body[data-option="a"] .btn:active { transform: translateY(0); }
+    body[data-option="a"] .btn-primary { border-color: transparent; background: linear-gradient(135deg, var(--a-blue), #4778ef); box-shadow: 0 10px 24px rgba(49,94,232,.22); }
+    body[data-option="a"] .btn-success { border-color: transparent; background: linear-gradient(135deg, #148257, #1aa676); box-shadow: 0 10px 24px rgba(24,132,91,.2); }
+    body[data-option="a"] .btn:disabled { cursor: not-allowed; opacity: .48; transform: none; box-shadow: none; }
+    body[data-option="a"] .result { border-color: #b9dfcd; background: linear-gradient(145deg, rgba(240,252,246,.96), rgba(248,255,252,.92)); }
+    body[data-option="a"] .evidence, body[data-option="a"] .example-box, body[data-option="a"] .quick-check, body[data-option="a"] .recovery-box { border-color: #d4deed; box-shadow: 0 8px 22px rgba(33,55,96,.06); }
+    body[data-option="a"] .toast { right: 24px; bottom: 24px; border: 1px solid rgba(255,255,255,.12); border-radius: 14px; background: rgba(11,23,54,.94); backdrop-filter: blur(12px); }
+    @keyframes panel-in { from { opacity: 0; transform: translateY(8px) scale(.995); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @media (prefers-reduced-motion: reduce) { body[data-option="a"] *, body[data-option="a"] *::before, body[data-option="a"] *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    @media (max-width: 680px) {
+      body[data-option="a"] .container { width: min(100% - 24px, 650px); }
+      body[data-option="a"] .prototype-title::after { width: 52px; height: 52px; border-radius: 17px; top: -10px; font-size: .9rem; }
+      body[data-option="a"] .prototype-title h1 { padding-right: 24px; }
+      body[data-option="a"] .panel { border-radius: 19px; }
+    }
+  </style>
 </head>
 <body data-option="a">
-  <div class="slide-container">
-    <header class="slide-header">
-      <div class="slide-header-left">
-        <h2>📚 Chương 3: Trí tuệ nhân tạo trong giáo dục</h2>
-      </div>
-      <div class="slide-header-right">
-        <span class="badge">Buổi 4 · 45 phút</span>
-        <button class="btn-help-trigger" data-action="a-start" title="Yêu cầu AI hỗ trợ">?</button>
-      </div>
-    </header>
+  <header class="topbar">
+    <a class="brand" href="../Day18_Prototypes/index.html">VLearn Lab · Day 18</a>
+    <span class="topbar-note">Option A</span>
+  </header>
 
-    <main class="slide-body">
-      <p>Học máy (Machine Learning) là một nhánh của Trí tuệ nhân tạo cho phép máy tính học từ dữ liệu mà không cần lập trình rõ ràng từng bước.</p>
-      <p>Mô hình ngôn ngữ lớn (LLM) và Học tăng cường (Reinforcement Learning) là hai khái niệm liên quan. Bạn chưa chắc <span class="concept-keyword">Machine Learning</span> có nghĩa gì và muốn tiếp tục theo kịp bài.</p>
-      <div class="option-strip">
-        <strong>Option A · AI Diagnostic Refresher</strong>
-        <span>AI chỉ hỗ trợ sau khi bạn chủ động yêu cầu. Bạn luôn có thể bỏ qua hoặc quay lại slide.</span>
-      </div>
-      <div class="notice-card">
-        <strong>Task</strong><br>
-        Dùng phương án này để xử lý phần chưa hiểu và tiếp tục theo dõi bài học.
-      </div>
-    </main>
+  <main class="container prototype-shell">
+    <a class="back-link" href="../Day18_Prototypes/index.html">← Về common context</a>
+    <section class="prototype-title">
+      <p class="eyebrow">OPTION A · AI DIAGNOSTIC REFRESHER</p>
+      <h1>Chẩn đoán nhanh phần bạn chưa hiểu</h1>
+      <p class="lead">AI chỉ bắt đầu khi bạn yêu cầu. Bạn có thể dừng, sửa câu trả lời hoặc quay lại bài học bất kỳ lúc nào.</p>
+    </section>
 
-    <footer class="slide-footer">
-      <span class="slide-tip">💡 AI sẽ hỏi ngắn, đưa gợi ý và hiển thị evidence đang sử dụng.</span>
-      <button class="pill-button" data-action="a-start">Tôi vẫn chưa hiểu</button>
-    </footer>
-  </div>
+    <section id="a-context" class="panel" aria-labelledby="lesson-heading">
+      <div class="slide-number">Human–AI Design · Slide 12 / 24</div>
+      <div class="slide-content">
+        <h2 id="lesson-heading">G-T-B-D-Hypothesis</h2>
+        <p>Giảng viên vừa chuyển sang phần tiếp theo. Bạn chưa chắc hypothesis có vai trò gì trong quá trình tìm evidence.</p>
+        <p class="notice">Bạn có thể yêu cầu hỗ trợ ngay hoặc đánh dấu nội dung để xem lại sau.</p>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" type="button" data-action="a-start">Tôi vẫn chưa hiểu</button>
+        <button class="btn btn-quiet" type="button" data-action="a-save">Đánh dấu để xem sau</button>
+      </div>
+    </section>
 
-  <div class="modal-backdrop" id="aDiagnosticModal">
-    <div class="modal-card">
-      <button class="modal-close-btn" data-action="a-close" title="Đóng">✕</button>
-      <div class="modal-header-title">💡 AI Diagnostic Refresher</div>
-      <div class="modal-header-sub"><span class="badge-approved">✓ User chủ động yêu cầu</span> · AI hỏi tối đa 2 câu ngắn</div>
-      <div class="detail-section">
-        <div class="section-label">Bạn đang vướng ở đâu?</div>
-        <div class="choice-list">
-          <div class="choice"><input type="radio" name="a-diagnosis" checked><label>Chưa hiểu thuật ngữ chính.</label></div>
-          <div class="choice"><input type="radio" name="a-diagnosis"><label>Chưa hiểu mối liên hệ với phần trước.</label></div>
-          <div class="choice"><input type="radio" name="a-diagnosis"><label>Muốn xem một ví dụ cụ thể.</label></div>
+    <section id="a-consent" class="panel hidden" aria-labelledby="consent-heading">
+      <div class="option-banner">Trước khi bắt đầu</div>
+      <h2 id="consent-heading">AI có thể hỗ trợ như thế nào?</h2>
+      <ul class="capability-list">
+        <li>Đặt 3 câu hỏi ngắn dựa trên slide hiện tại và câu trả lời của bạn.</li>
+        <li>Gợi ý một khái niệm có thể cần xem lại và giải thích lý do.</li>
+        <li>Kết quả chỉ là gợi ý, có thể chưa xác định đúng nguyên nhân.</li>
+        <li>Prototype này không dùng lịch sử học tập và không thay thế giảng viên.</li>
+      </ul>
+      <div class="actions">
+        <button class="btn btn-primary" type="button" data-action="a-consent">Bắt đầu 3 câu hỏi</button>
+        <button class="btn btn-quiet" type="button" data-action="a-cancel">Không, quay lại bài</button>
+      </div>
+    </section>
+
+    <section id="a-diagnostic" class="panel hidden" aria-labelledby="question-heading">
+      <div class="step-meta"><span id="question-count">Câu 1 / 3</span><span>Khoảng 45 giây</span></div>
+      <div class="step-track" aria-hidden="true"><div id="step-fill" class="step-fill"></div></div>
+      <form id="diagnostic-form">
+        <fieldset style="border:0;padding:0;margin:0">
+          <legend id="question-heading"><h2 id="question-text">Bạn đang vướng nhất ở điểm nào?</h2></legend>
+          <div id="question-options" class="choice-list"></div>
+        </fieldset>
+        <p id="answer-error" class="notice hidden" role="alert">Hãy chọn một câu trả lời để tiếp tục.</p>
+        <div class="actions">
+          <button id="question-back" class="btn hidden" type="button" data-action="a-back">← Câu trước</button>
+          <button id="question-next" class="btn btn-primary" type="submit">Tiếp tục</button>
+          <button class="btn btn-quiet" type="button" data-action="a-cancel">Dừng và quay lại bài</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="a-result" class="panel result hidden" aria-labelledby="result-heading">
+      <p class="eyebrow">GỢI Ý CHẨN ĐOÁN</p>
+      <h2 id="result-heading">Có thể bạn đang vướng ở: Hypothesis và evidence</h2>
+      <div class="uncertainty"><strong>Đây chưa phải kết luận chắc chắn.</strong> AI chỉ suy luận từ slide hiện tại và 3 lựa chọn của bạn.</div>
+      <div class="evidence">
+        <strong>Vì sao AI đưa ra gợi ý này?</strong>
+        <span id="evidence-summary">Bạn cho biết chưa rõ thuật ngữ chính và mối liên hệ với evidence.</span>
+      </div>
+      <p>Hypothesis là một dự đoán có thể được kiểm tra. Evidence là dữ liệu thực tế dùng để làm hypothesis mạnh lên, yếu đi hoặc bị bác bỏ.</p>
+      <div class="actions">
+        <button class="btn btn-success" type="button" data-action="a-confirm">Đúng phần tôi đang vướng</button>
+        <button class="btn" type="button" data-action="a-wrong">Không đúng phần tôi đang vướng</button>
+        <button class="btn btn-quiet" type="button" data-action="a-cancel">Quay lại bài</button>
+      </div>
+    </section>
+
+    <section id="a-recovery" class="panel hidden" aria-labelledby="recovery-heading">
+      <h2 id="recovery-heading">Gợi ý chưa đúng — bạn muốn làm gì?</h2>
+      <p>Câu trả lời của bạn đã được giữ lại trong phiên này. Bạn vẫn là người quyết định bước tiếp theo.</p>
+      <div class="recovery-box">
+        <h3>Các cách tiếp tục</h3>
+        <div class="actions">
+          <button class="btn btn-primary" type="button" data-action="a-retry">Trả lời lại câu hỏi</button>
+          <button class="btn" type="button" data-action="a-alternative">Xem cách giải thích khác</button>
+          <button class="btn" type="button" data-action="a-escalate">Nhờ giảng viên/trợ giảng</button>
+          <button class="btn btn-quiet" type="button" data-action="a-cancel">Bỏ qua và quay lại bài</button>
         </div>
       </div>
-      <div class="source-card">AI đang dùng: slide hiện tại và lựa chọn của bạn. Prototype không dùng learning history.</div>
-      <div class="modal-footer">
-        <button class="pill-button pill-secondary" data-action="a-close">Dừng và quay lại</button>
-        <button class="pill-button" data-action="a-diagnose">Xem gợi ý ôn tập</button>
-      </div>
-    </div>
-  </div>
+    </section>
 
-  <div class="modal-backdrop" id="aResultModal">
-    <div class="modal-card">
-      <button class="modal-close-btn" data-action="a-return" title="Đóng">✕</button>
-      <div class="modal-header-title">🧠 Gợi ý ôn tập</div>
-      <div class="modal-header-sub"><span class="badge-approved">✓ Gợi ý, không phải kết luận chắc chắn</span></div>
-      <div class="detail-section">
-        <div class="section-label">Có thể bạn cần xem lại</div>
-        <div class="section-body">Machine Learning là cách để hệ thống học từ dữ liệu và cải thiện mà không cần được lập trình rõ ràng từng bước. Hãy xem đây là gợi ý ngắn dựa trên slide hiện tại.</div>
+    <section id="a-refresher" class="panel hidden" aria-labelledby="refresher-heading">
+      <div class="option-banner green">Phần ôn tập ngắn · khoảng 1 phút</div>
+      <div class="refresher">
+        <div>
+          <h2 id="refresher-heading">Phân biệt hypothesis và evidence</h2>
+          <p><strong>Hypothesis</strong> là điều nhóm dự đoán có thể đúng. <strong>Evidence</strong> là sự kiện hoặc hành vi đã xảy ra, có thể ủng hộ hoặc bác bỏ dự đoán đó.</p>
+        </div>
+        <div id="standard-example" class="example-box">
+          <strong>Ví dụ</strong>
+          <p>“Người học bỏ bài vì thiếu kiến thức nền” là hypothesis. Việc một người đã đọc lại ba lần, tìm video và vẫn bỏ dở là evidence cần được phân tích.</p>
+        </div>
+        <div id="alternative-example" class="example-box hidden">
+          <strong>Cách giải thích khác</strong>
+          <p>Hãy xem hypothesis như một dự đoán thời tiết và evidence như số đo nhiệt độ thực tế. Số đo có quyền chứng minh dự đoán ban đầu là sai.</p>
+        </div>
+        <div class="quick-check">
+          <h3>Kiểm tra nhanh</h3>
+          <p>Câu nào dưới đây là evidence?</p>
+          <div class="choice-list">
+            <div class="choice"><input id="check-a" type="radio" name="quick-check" value="hypothesis"><label for="check-a">Người học có thể bỏ bài vì thiếu kiến thức nền.</label></div>
+            <div class="choice"><input id="check-b" type="radio" name="quick-check" value="evidence"><label for="check-b">Trong lần học gần nhất, người học đã tìm hai video và dừng bài sau 20 phút.</label></div>
+          </div>
+          <button class="btn btn-primary" type="button" data-action="a-check">Kiểm tra câu trả lời</button>
+          <div id="quick-feedback" class="quick-feedback hidden" role="status"></div>
+        </div>
       </div>
-      <div class="example-card">Ví dụ: một hệ thống gợi ý có thể học từ lịch sử tương tác để đưa ra đề xuất phù hợp hơn ở lần sau.</div>
-      <div class="detail-section">
-        <div class="section-label">Evidence được dùng</div>
-        <div class="source-card">Slide hiện tại và lựa chọn “chưa hiểu thuật ngữ chính” của bạn.</div>
+      <div class="actions">
+        <button class="btn btn-success" type="button" data-action="a-finish" disabled>Đã hiểu — quay lại bài</button>
+        <button class="btn" type="button" data-action="a-alternative">Xem cách giải thích khác</button>
+        <button class="btn btn-quiet" type="button" data-action="a-escalate">Tôi vẫn cần người hỗ trợ</button>
       </div>
-      <div class="modal-footer">
-        <button class="pill-button pill-secondary" data-action="a-save">Đánh dấu xem sau</button>
-        <button class="pill-button" data-action="a-return">Quay lại bài</button>
-      </div>
-    </div>
-  </div>
+    </section>
 
-  <div class="toast" id="toast"></div>
-  <script src="prototype.js"></script>
+    <section id="a-escalation" class="panel hidden" aria-labelledby="escalation-heading">
+      <h2 id="escalation-heading">Chuyển cho người hỗ trợ</h2>
+      <p>Hệ thống sẽ chuẩn bị: Slide 12, ba câu trả lời và phần bạn cho biết chưa hiểu. Không gửi cho tới khi bạn xác nhận.</p>
+      <div class="actions">
+        <button class="btn btn-primary" type="button" data-action="a-send">Xác nhận gửi yêu cầu</button>
+        <button class="btn" type="button" data-action="a-recovery-back">Quay lại lựa chọn hỗ trợ</button>
+        <button class="btn btn-quiet" type="button" data-action="a-cancel">Không gửi, quay lại bài</button>
+      </div>
+    </section>
+
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const $ = (selector) => document.querySelector(selector);
+      const $$ = (selector) => [...document.querySelectorAll(selector)];
+      const panels = ["#a-context", "#a-consent", "#a-diagnostic", "#a-result", "#a-recovery", "#a-refresher", "#a-escalation"];
+      const questions = [
+        { text: "Bạn đang vướng nhất ở điểm nào?", options: ["Tôi chưa hiểu thuật ngữ chính.", "Tôi chưa hiểu mối liên hệ với phần trước.", "Tôi muốn xem một ví dụ cụ thể."] },
+        { text: "Phần nào về hypothesis chưa rõ với bạn?", options: ["Cách tạo một hypothesis.", "Cách dùng evidence để kiểm tra.", "Cách phân biệt hypothesis với kết luận."] },
+        { text: "Bạn muốn tiến bộ theo cách nào ngay lúc này?", options: ["Xem giải thích ngắn.", "Xem một ví dụ thực tế.", "Thử một câu kiểm tra nhanh."] }
+      ];
+      let currentQuestion = 0;
+      let answers = [null, null, null];
+      let toastTimer;
+
+      function showPanel(selector, focusSelector = "h2") {
+        panels.forEach((panel) => $(panel)?.classList.add("hidden"));
+        const active = $(selector);
+        active?.classList.remove("hidden");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.setTimeout(() => active?.querySelector(focusSelector)?.setAttribute("tabindex", "-1") || null, 0);
+        window.setTimeout(() => active?.querySelector(focusSelector)?.focus(), 10);
+      }
+
+      function toast(message) {
+        const node = $("#toast");
+        clearTimeout(toastTimer);
+        node.textContent = message;
+        node.classList.remove("hidden");
+        toastTimer = window.setTimeout(() => node.classList.add("hidden"), 2800);
+      }
+
+      function renderQuestion() {
+        const question = questions[currentQuestion];
+        $("#question-count").textContent = `Câu ${currentQuestion + 1} / ${questions.length}`;
+        $("#step-fill").style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+        $("#question-text").textContent = question.text;
+        $("#question-options").innerHTML = question.options.map((option, index) => {
+          const id = `q${currentQuestion}-${index}`;
+          const checked = answers[currentQuestion] === option ? " checked" : "";
+          return `<div class="choice"><input id="${id}" type="radio" name="diagnostic-answer" value="${option}"${checked}><label for="${id}">${option}</label></div>`;
+        }).join("");
+        $("#question-back").classList.toggle("hidden", currentQuestion === 0);
+        $("#question-next").textContent = currentQuestion === questions.length - 1 ? "Xem gợi ý chẩn đoán" : "Tiếp tục";
+        $("#answer-error").classList.add("hidden");
+      }
+
+      function resetSession() {
+        currentQuestion = 0;
+        answers = [null, null, null];
+        $("#diagnostic-form").reset();
+        $$('input[name="quick-check"]').forEach((input) => { input.checked = false; });
+        $("#quick-feedback").className = "quick-feedback hidden";
+        $("[data-action='a-finish']").disabled = true;
+        $("#standard-example").classList.remove("hidden");
+        $("#alternative-example").classList.add("hidden");
+      }
+
+      $$("[data-action='a-start']").forEach((button) => button.addEventListener("click", () => showPanel("#a-consent")));
+      $$("[data-action='a-consent']").forEach((button) => button.addEventListener("click", () => { resetSession(); renderQuestion(); showPanel("#a-diagnostic"); }));
+      $$("[data-action='a-cancel']").forEach((button) => button.addEventListener("click", () => { showPanel("#a-context", "#lesson-heading"); toast("Đã quay lại Slide 12. Không có yêu cầu nào được gửi."); }));
+      $$("[data-action='a-save']").forEach((button) => button.addEventListener("click", () => toast("Đã đánh dấu Slide 12 để xem sau.")));
+
+      $("#diagnostic-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const selected = $('input[name="diagnostic-answer"]:checked');
+        if (!selected) { $("#answer-error").classList.remove("hidden"); return; }
+        answers[currentQuestion] = selected.value;
+        if (currentQuestion < questions.length - 1) { currentQuestion += 1; renderQuestion(); $("#question-text").focus(); return; }
+        $("#evidence-summary").textContent = `Bạn đã chọn: “${answers[0]}”, “${answers[1]}” và “${answers[2]}”`;
+        showPanel("#a-result");
+      });
+
+      $$("[data-action='a-back']").forEach((button) => button.addEventListener("click", () => { if (currentQuestion > 0) { currentQuestion -= 1; renderQuestion(); } }));
+      $$("[data-action='a-confirm']").forEach((button) => button.addEventListener("click", () => showPanel("#a-refresher")));
+      $$("[data-action='a-wrong']").forEach((button) => button.addEventListener("click", () => showPanel("#a-recovery")));
+      $$("[data-action='a-retry']").forEach((button) => button.addEventListener("click", () => { currentQuestion = 0; renderQuestion(); showPanel("#a-diagnostic"); }));
+      $$("[data-action='a-alternative']").forEach((button) => button.addEventListener("click", () => { $("#standard-example").classList.add("hidden"); $("#alternative-example").classList.remove("hidden"); showPanel("#a-refresher"); toast("Đã chuyển sang cách giải thích bằng phép so sánh."); }));
+      $$("[data-action='a-escalate']").forEach((button) => button.addEventListener("click", () => showPanel("#a-escalation")));
+      $$("[data-action='a-recovery-back']").forEach((button) => button.addEventListener("click", () => showPanel("#a-recovery")));
+      $$("[data-action='a-send']").forEach((button) => button.addEventListener("click", () => { showPanel("#a-context", "#lesson-heading"); toast("Đã gửi yêu cầu cho giảng viên/trợ giảng kèm sự đồng ý của bạn."); }));
+
+      $$("[data-action='a-check']").forEach((button) => button.addEventListener("click", () => {
+        const selected = $('input[name="quick-check"]:checked');
+        const feedback = $("#quick-feedback");
+        feedback.classList.remove("hidden", "correct", "incorrect");
+        if (!selected) { feedback.textContent = "Hãy chọn một câu trả lời."; feedback.classList.add("incorrect"); return; }
+        if (selected.value === "evidence") {
+          feedback.textContent = "Đúng. Đây là hành vi và hậu quả đã thực sự xảy ra.";
+          feedback.classList.add("correct");
+          $("[data-action='a-finish']").disabled = false;
+        } else {
+          feedback.textContent = "Chưa đúng. Câu này vẫn là một dự đoán cần được kiểm tra.";
+          feedback.classList.add("incorrect");
+        }
+      }));
+
+      $$("[data-action='a-finish']").forEach((button) => button.addEventListener("click", () => { showPanel("#a-context", "#lesson-heading"); toast("Đã hoàn thành phần ôn tập và quay lại Slide 12."); }));
+    });
+  </script>
 </body>
 </html>
