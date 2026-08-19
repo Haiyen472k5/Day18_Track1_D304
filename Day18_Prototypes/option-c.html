@@ -3,38 +3,116 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Option C — Anonymous Human Escalation</title>
-  <link rel="stylesheet" href="yen-style.css">
+  <title>VLearn Reader — Option C</title>
+  <link rel="stylesheet" href="option-c-reader.css">
 </head>
 <body data-option="c">
-  <div class="slide-container">
-    <header class="slide-header">
-      <div class="slide-header-left">
-        <h2>📚 Chương 3: Trí tuệ nhân tạo trong giáo dục</h2>
+  <div class="reader-app">
+    <header class="reader-topbar">
+      <div class="reader-topbar-left">
+        <button class="topbar-icon" data-action="reader-back" aria-label="Quay lại">←</button>
+        <strong>Bài 18 · Day18</strong>
       </div>
-      <div class="slide-header-right">
-        <span class="badge">Buổi 4 · 45 phút</span>
-        <button class="btn-help-trigger" data-action="c-open" title="Hỏi người hỗ trợ">?</button>
+      <div class="reader-topbar-right">
+        <div class="reader-progress" aria-label="Tiến độ bài học">
+          <span>0/3 bài</span>
+          <span class="progress-track"><span class="progress-value"></span></span>
+        </div>
+        <button class="topbar-ai" data-action="c-open">✦ <span>Mở Trợ giảng AI</span></button>
+        <button class="account-avatar" aria-label="Mở menu tài khoản">Đ</button>
       </div>
     </header>
 
-    <main class="slide-body">
-      <p>Học máy (Machine Learning) là một nhánh của Trí tuệ nhân tạo cho phép máy tính học từ dữ liệu mà không cần lập trình rõ ràng từng bước.</p>
-      <p>Mô hình ngôn ngữ lớn (LLM) và Học tăng cường (Reinforcement Learning) là hai khái niệm liên quan. Bạn chưa chắc <span class="concept-keyword">Machine Learning</span> có nghĩa gì và không muốn hỏi công khai trong lúc lớp đang diễn ra.</p>
-      <div class="option-strip">
-        <strong>Option C · Anonymous Human Escalation</strong>
-        <span>AI chỉ chuẩn bị context. Bạn duyệt nội dung trước khi gửi; người hỗ trợ giữ quyền trả lời.</span>
-      </div>
-      <div class="notice-card">
-        <strong>Task</strong><br>
-        Dùng phương án này để xử lý phần chưa hiểu và tiếp tục theo dõi bài học.
-      </div>
-    </main>
+    <div class="reader-layout">
+      <aside class="reader-sidebar" id="readerSidebar">
+        <div class="sidebar-heading">
+          <span>NỘI DUNG BÀI HỌC</span>
+          <button class="sidebar-close" data-action="reader-close-sidebar" aria-label="Đóng dàn bài">×</button>
+        </div>
+        <div class="sidebar-section-title">
+          <strong>Slides</strong><span>⌄</span>
+        </div>
+        <button class="sidebar-slide active" aria-current="page">
+          <span class="sidebar-slide-icon">▤</span>
+          <span class="sidebar-slide-name">Day18 — Human–AI Design</span>
+          <span class="sidebar-slide-status">Đang học</span>
+        </button>
+        <button class="sidebar-slide">
+          <span class="sidebar-slide-icon">▤</span>
+          <span class="sidebar-slide-name">Day18 — Multiple Prototypes</span>
+        </button>
+        <button class="sidebar-lab">
+          <span>Lab 18 — Multiple Prototypes</span><span>›</span>
+        </button>
+      </aside>
 
-    <footer class="slide-footer">
-      <span class="slide-tip">💡 Bạn có thể gửi câu hỏi ẩn danh và giữ lại mốc slide để xem phản hồi sau.</span>
-      <button class="pill-button" data-action="c-open">Hỏi người hỗ trợ ẩn danh</button>
-    </footer>
+      <main class="reader-main">
+        <div class="reader-content">
+          <section class="slide-workspace" aria-label="Khu vực slide bài giảng">
+            <button class="canvas-ai" data-action="c-open" aria-label="Mở trợ lý hỗ trợ" title="Mở trợ lý hỗ trợ">✦</button>
+            <div class="slide-canvas-wrap">
+              <article class="lesson-slide pdf-slide-page" id="lessonSlide" aria-label="Slide bài giảng">
+                <img id="pdfSlideImage" class="pdf-slide-image" alt="Slide bài giảng từ Al & LLM Foundation">
+                <div id="pdfTextLayer" class="pdf-text-layer" aria-label="Lớp chữ có thể chọn trên slide"></div>
+                <div id="pdfLoadStatus" class="pdf-load-status">Đang tải slide bài giảng…</div>
+              </article>
+            </div>
+
+            <div class="reader-toolbar" aria-label="Công cụ chú thích">
+              <button class="tool-button active" aria-label="Đọc">➤</button>
+              <button class="tool-button" aria-label="Bút">╱</button>
+              <button class="tool-button" aria-label="Highlight">⌁</button>
+              <button class="tool-button" aria-label="Khoanh">○</button>
+              <button class="tool-button" aria-label="Tẩy">◇</button>
+              <button class="tool-button" aria-label="Khoanh vùng hỏi AI">♧</button>
+              <button class="tool-button" aria-label="Ghi chú">T</button>
+              <span class="toolbar-divider"></span>
+              <div class="view-toggle" aria-label="Chế độ xem slide">
+                <button class="view-button active">▣ Từng trang</button>
+                <button class="view-button">▤ Cuộn dọc</button>
+              </div>
+              <div class="zoom-control" aria-label="Điều khiển thu phóng">
+                <button class="tool-button" data-action="reader-zoom-out" aria-label="Thu nhỏ">−</button>
+                <span id="zoomValue">100%</span>
+                <button class="tool-button" data-action="reader-zoom-in" aria-label="Phóng to">＋</button>
+              </div>
+              <button class="tool-button" data-action="reader-undo" aria-label="Hoàn tác">↶</button>
+              <button class="tool-button danger" data-action="reader-clear" aria-label="Xoá chú thích">▥</button>
+              <button class="tool-button" data-action="reader-fullscreen" aria-label="Toàn màn hình">⛶</button>
+            </div>
+
+            <div class="slide-navigation" aria-label="Điều hướng slide">
+              <button class="nav-button" id="slidePrev" data-action="reader-prev" disabled aria-label="Slide trước">‹</button>
+              <input id="slideNumber" type="number" value="1" min="1" max="78" aria-label="Nhập số slide muốn đến">
+              <span> / <span id="slideTotal">78</span></span>
+              <button class="nav-button" id="slideNext" data-action="reader-next" aria-label="Slide sau">›</button>
+            </div>
+          </section>
+
+          <section class="notes-card" id="notesCard">
+            <button class="notes-heading" data-action="reader-notes">
+              <span>▱</span><strong>Ghi chú của giảng viên</strong>
+            </button>
+            <p>Chưa có ghi chú cho phần này.</p>
+          </section>
+
+          <div class="reader-feedback">
+            <button data-action="reader-useful">Hữu ích</button>
+            <button data-action="reader-not-useful">Chưa hữu ích</button>
+            <button data-action="reader-report">Báo lỗi</button>
+          </div>
+
+          <nav class="lesson-navigation" aria-label="Điều hướng bài học">
+            <button data-action="reader-prev-lesson">‹ Bài trước</button>
+            <button data-action="reader-next-lesson">Đi tới bài tiếp theo ›</button>
+          </nav>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="selection-action hidden" id="selectionAction" role="dialog" aria-label="Hỏi người hỗ trợ về thuật ngữ đã chọn">
+    <button type="button" data-action="c-selection-help" aria-label="Hỏi người hỗ trợ" title="Hỏi người hỗ trợ">?</button>
   </div>
 
   <div class="modal-backdrop" id="cPreviewModal">
@@ -44,9 +122,9 @@
       <div class="modal-header-sub"><span class="badge-approved">✓ User duyệt trước khi gửi</span> · AI chỉ chuẩn bị context</div>
       <div class="detail-section">
         <div class="section-label">Câu hỏi gửi tới người hỗ trợ</div>
-      <textarea id="c-question">Mình chưa hiểu Machine Learning trong Slide 12. Khái niệm này liên quan thế nào đến LLM và Học tăng cường?</textarea>
+        <textarea id="c-question">Mình chưa hiểu Machine Learning trong Slide 1. Khái niệm này liên quan thế nào đến LLM và Học tăng cường?</textarea>
       </div>
-      <div class="source-card">Context sẽ gửi: Slide 12, thuật ngữ được chọn và câu hỏi trên.</div>
+      <div class="source-card">Context sẽ gửi: slide hiện tại, thuật ngữ được chọn và câu hỏi trên. Bạn có thể sửa nội dung trước khi gửi.</div>
       <label class="privacy"><input id="c-anonymous" type="checkbox" checked> Gửi ẩn danh cho LabCoach/giảng viên.</label>
       <div class="modal-footer">
         <button class="pill-button pill-secondary" data-action="c-cancel">Hủy và quay lại</button>
@@ -59,19 +137,40 @@
     <div class="modal-card">
       <button class="modal-close-btn" data-action="c-return" title="Đóng">✕</button>
       <div class="modal-header-title">✅ Đã gửi câu hỏi ẩn danh</div>
-      <div class="modal-header-sub"><span class="badge-approved">✓ Trạng thái: đang chờ phản hồi</span></div>
+      <div class="modal-header-sub"><span class="badge-approved">✓ Trạng thái: đang chờ phản hồi</span> · Không làm lộ danh tính người học</div>
       <div class="detail-section">
-        <div class="section-label">Bạn có thể tiếp tục bài học</div>
-        <div class="section-body">Câu hỏi đã được lưu cùng Slide 12. Khi có phản hồi, bạn có thể quay lại context này.</div>
+        <div class="section-label">Bạn không bị mắc kẹt ở bước này</div>
+        <div class="section-body">Câu hỏi đã được lưu cùng slide hiện tại. Bạn có thể tiếp tục theo dõi bài trong khi chờ người hỗ trợ trả lời.</div>
       </div>
-      <div class="example-card">AI đã tóm tắt context và chuẩn bị wording. AI không tự trả lời thay người hỗ trợ.</div>
+      <div class="notice-card">Trong prototype, phản hồi mẫu xuất hiện ngay khi bạn bấm nút bên dưới để minh họa cách người hỗ trợ giúp bạn hiểu khái niệm.</div>
       <div class="modal-footer">
+        <button class="pill-button pill-secondary" data-action="c-show-response">Xem phản hồi mẫu</button>
         <button class="pill-button" data-action="c-return">Quay lại bài</button>
       </div>
     </div>
   </div>
 
+  <div class="modal-backdrop" id="cResponseModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" data-action="c-return-response" title="Đóng">✕</button>
+      <div class="modal-header-title">💬 Phản hồi từ người hỗ trợ</div>
+      <div class="modal-header-sub"><span class="badge-approved">✓ Theo context slide hiện tại</span> · Phản hồi mô phỏng cho demo</div>
+      <div class="detail-section">
+        <div class="section-label">Giải thích ngắn gọn</div>
+        <div class="section-body">Machine Learning là cách để hệ thống tìm ra quy luật từ dữ liệu và cải thiện kết quả theo thời gian, thay vì phải được lập trình sẵn từng bước.</div>
+      </div>
+      <div class="example-card"><strong>Ví dụ:</strong> hệ thống gợi ý có thể học từ lịch sử tương tác để đề xuất nội dung phù hợp hơn ở lần sau.</div>
+      <div class="source-card"><strong>Điểm cần nhớ:</strong> Machine Learning học từ dữ liệu; LLM là một loại mô hình có thể sinh văn bản; Reinforcement Learning học qua phần thưởng.</div>
+      <div class="notice-card">Bạn đã có một lời giải thích vừa đủ để tiếp tục bài. Nếu vẫn chưa rõ, bạn có thể sửa câu hỏi và gửi lại mà không phải hỏi công khai.</div>
+      <div class="modal-footer">
+        <button class="pill-button pill-secondary" data-action="c-ask-again">Vẫn chưa rõ — hỏi tiếp</button>
+        <button class="pill-button" data-action="c-understood">Đã hiểu — tiếp tục bài</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
+  <script src="assets/llm-foundation/pages.js"></script>
   <script src="prototype.js"></script>
 </body>
 </html>
