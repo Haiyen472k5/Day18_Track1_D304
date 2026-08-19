@@ -1,63 +1,72 @@
 document.addEventListener("DOMContentLoaded", () => {
   const option = document.body.dataset.option;
-  const $ = (selector) => document.querySelector(selector);
-  const show = (selector) => $(selector)?.classList.remove("hidden");
-  const hide = (selector) => $(selector)?.classList.add("hidden");
+
+  const all = (selector) => Array.from(document.querySelectorAll(selector));
+  const on = (action, handler) => {
+    all("[data-action='" + action + "']").forEach((node) => node.addEventListener("click", handler));
+  };
+  const openModal = (selector) => document.querySelector(selector)?.classList.add("active");
+  const closeModal = (selector) => document.querySelector(selector)?.classList.remove("active");
+  const closeAll = () => all(".modal-backdrop").forEach((node) => node.classList.remove("active"));
 
   function toast(message) {
-    const node = $("#toast");
+    const node = document.querySelector("#toast");
     if (!node) return;
     node.textContent = message;
+    node.classList.add("show");
     node.classList.remove("hidden");
-    window.setTimeout(() => node.classList.add("hidden"), 2800);
+    window.setTimeout(() => {
+      node.classList.remove("show");
+      node.classList.add("hidden");
+    }, 2600);
   }
 
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeAll();
+  });
+
+  all(".modal-backdrop").forEach((backdrop) => {
+    backdrop.addEventListener("click", (event) => {
+      if (event.target === backdrop) backdrop.classList.remove("active");
+    });
+  });
+
   if (option === "a") {
-    $("[data-action='a-start']")?.addEventListener("click", () => {
-      hide("#a-context");
-      show("#a-diagnostic");
+    on("a-start", () => openModal("#aDiagnosticModal"));
+    on("a-diagnose", () => {
+      closeModal("#aDiagnosticModal");
+      openModal("#aResultModal");
     });
-    $("[data-action='a-diagnose']")?.addEventListener("click", () => {
-      hide("#a-diagnostic");
-      show("#a-result");
+    on("a-close", () => {
+      closeModal("#aDiagnosticModal");
+      toast("Đã quay lại slide ban đầu.");
     });
-    $("[data-action='a-return']")?.addEventListener("click", () => {
-      hide("#a-result");
-      show("#a-context");
+    on("a-return", () => {
+      closeModal("#aResultModal");
       toast("Đã quay lại đúng slide ban đầu.");
     });
-    $("[data-action='a-save']")?.addEventListener("click", () => toast("Đã đánh dấu để xem sau. Bạn vẫn có thể tiếp tục bài."));
-    $("[data-action='a-retry']")?.addEventListener("click", () => {
-      hide("#a-result");
-      show("#a-diagnostic");
-    });
+    on("a-save", () => toast("Đã đánh dấu để xem sau. Bạn vẫn có thể tiếp tục bài."));
   }
 
   if (option === "b") {
-    $("[data-action='b-open']")?.addEventListener("click", () => {
-      show("#b-tooltip");
+    on("b-open", () => {
+      const tooltip = document.querySelector("#b-tooltip");
+      tooltip?.classList.remove("hidden");
       toast("Tooltip mở theo yêu cầu của bạn.");
     });
-    $("[data-action='b-close']")?.addEventListener("click", () => hide("#b-tooltip"));
-    $("[data-action='b-save']")?.addEventListener("click", () => toast("Đã lưu thuật ngữ để xem sau."));
+    on("b-close", () => document.querySelector("#b-tooltip")?.classList.add("hidden"));
+    on("b-save", () => toast("Đã lưu thuật ngữ để xem sau."));
   }
 
   if (option === "c") {
-    $("[data-action='c-open']")?.addEventListener("click", () => {
-      hide("#c-context");
-      show("#c-preview");
+    on("c-open", () => openModal("#cPreviewModal"));
+    on("c-send", () => {
+      closeModal("#cPreviewModal");
+      openModal("#cSentModal");
     });
-    $("[data-action='c-send']")?.addEventListener("click", () => {
-      hide("#c-preview");
-      show("#c-sent");
-    });
-    $("[data-action='c-cancel']")?.addEventListener("click", () => {
-      hide("#c-preview");
-      show("#c-context");
-    });
-    $("[data-action='c-return']")?.addEventListener("click", () => {
-      hide("#c-sent");
-      show("#c-context");
+    on("c-cancel", () => closeModal("#cPreviewModal"));
+    on("c-return", () => {
+      closeModal("#cSentModal");
       toast("Đã quay lại slide. Câu hỏi đang chờ phản hồi.");
     });
   }

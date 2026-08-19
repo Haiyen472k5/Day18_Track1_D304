@@ -132,8 +132,8 @@ Nhóm đã hoàn thành bản Human–AI Decision Table đề xuất cho ba opti
 
 ## 7. Việc cần làm trước Chặng 4
 
-- Đồng Đại Huy: build Option A với ba state gồm context, diagnostic/refresher và user decision/recovery.
+- Lê Đình Việt: build Option A với ba state gồm context, diagnostic/refresher và user decision/recovery.
 - Nguyễn Thị Hải Yến: build Option B với tooltip ngắn, source rõ và đường đóng/lưu.
-- Lê Đình Việt: xác nhận và build Option C với preview context, gửi ẩn danh và trạng thái chờ phản hồi.
+- Đồng Đại Huy: xác nhận và build Option C với preview context, gửi ẩn danh và trạng thái chờ phản hồi.
 - Cả nhóm: dùng chung slide, thuật ngữ, task, content fixture và reset path.
 - Mỗi thành viên thử option do thành viên khác xây dựng trước khi chuẩn hóa A/B/C.

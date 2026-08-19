@@ -9,6 +9,7 @@
 | Common context | Học viên gặp thuật ngữ khó trong lớp học có nhịp độ nhanh |
 | Task chung | Dùng từng option để xử lý phần chưa hiểu và tiếp tục theo dõi bài |
 | Prototype folder | **Day18_Prototypes/** |
+| Visual baseline | Prototype của Nguyễn Thị Hải Yến: slide trung tâm, card trắng, modal popup và nút action dạng pill |
 
 ## 1. Scope chuẩn
 
@@ -32,7 +33,7 @@ Chỉ critical interaction khác nhau:
 
 ### Option A — AI Diagnostic Refresher
 
-**Người phụ trách:** Đồng Đại Huy
+**Người phụ trách:** Lê Đình Việt
 
 Flow:
 
@@ -52,11 +53,11 @@ Flow:
 2. Tooltip: user click/hover để xem định nghĩa và ví dụ đã chuẩn bị.
 3. Recovery: user đóng tooltip, lưu thuật ngữ hoặc tiếp tục bài.
 
-[Mở Option B](../../Day18_Prototypes/option-b.html)
+[Mở Option B](../../Day18_Prototypes/prototype.html)
 
 ### Option C — Anonymous Human Escalation
 
-**Người phụ trách:** Lê Đình Việt
+**Người phụ trách:** Đồng Đại Huy
 
 Flow:
 
@@ -121,6 +122,7 @@ Prototype được xem là test-ready khi:
 - [x] Có control/recovery path.
 - [x] Có annotation cho người facilitate.
 - [x] Prototype chạy độc lập bằng HTML/CSS/JavaScript, không cần API thật.
+- [x] Option A và Option C đã dùng cùng hệ trình bày với prototype của Yến.
 - [ ] Cả ba thành viên đã thử option do người khác build.
 - [ ] Nhóm đã kiểm tra trên cùng một thiết bị/trình duyệt và chốt thứ tự test.
 
